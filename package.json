@@ -15,7 +15,6 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "localforage": "1.10.0",
-    "point-in-polygon-extended": "0.0.1",
     "prettier": "2.8.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",

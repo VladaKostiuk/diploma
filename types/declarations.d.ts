@@ -1,5 +1,3 @@
-declare module 'point-in-polygon-extended';
-
 declare module '*.svg' {
   import React = require('react');
   export const ReactComponent: React.FC<React.SVGProps<SVGSVGElement>>;
