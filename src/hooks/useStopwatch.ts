@@ -20,9 +20,15 @@ export const useStopwatch = (speed = 1) => {
     setIsRunning(false);
   };
 
+  const handleResetStopWatch = () => {
+    setTime(0);
+    setIsRunning(false);
+  };
+
   return {
     time,
     startStopwatch: handleStartStopwatch,
     stopStopwatch: handleStopStopwatch,
+    resetStopwatch: handleResetStopWatch,
   };
 };
