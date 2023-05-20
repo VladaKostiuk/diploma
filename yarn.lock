@@ -7364,11 +7364,6 @@ pkg-up@^3.1.0:
   dependencies:
     find-up "^3.0.0"
 
-point-in-polygon-extended@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/point-in-polygon-extended/-/point-in-polygon-extended-0.0.1.tgz#97aeb25606833f740ab24a653175a30a0a6a38ed"
-  integrity sha512-4BXwfPtcAefF7E+91FhwU4CeRGWmVteiVfRrKEDGVkmw237TNEJcYfdp6gXZKpZnyMfgwtYDkVDISicLh7NwdQ==
-
 postcss-attribute-case-insensitive@^5.0.2:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/postcss-attribute-case-insensitive/-/postcss-attribute-case-insensitive-5.0.2.tgz#03d761b24afc04c09e757e92ff53716ae8ea2741"
