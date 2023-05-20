@@ -7,7 +7,7 @@ export const useStopwatch = (speed = 1) => {
   useEffect(() => {
     let intervalId: NodeJS.Timer;
     if (isRunning) {
-      intervalId = setInterval(() => setTime(time + 1 * speed), 10);
+      intervalId = setInterval(() => setTime(time + 1 * speed), 1000);
     }
     return () => clearInterval(intervalId);
   }, [isRunning, time]);

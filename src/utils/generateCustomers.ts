@@ -8,7 +8,10 @@ interface GenerateCustomerOptions {
   };
 }
 
-const generateCustomer = (options?: GenerateCustomerOptions): Customer => {
+const generateCustomer = (
+  previousCustomerArrivalTime: number,
+  options?: GenerateCustomerOptions,
+): Customer => {
   const { goodsAmount } = options || {};
   return {
     id: faker.string.uuid(),
@@ -17,6 +20,9 @@ const generateCustomer = (options?: GenerateCustomerOptions): Customer => {
       min: goodsAmount?.min || 1,
       max: goodsAmount?.max || 20,
     }),
+    arrivalTime:
+      previousCustomerArrivalTime + faker.number.int({ min: 0, max: 60 }),
+    priority: 0,
   };
 };
 
@@ -25,5 +31,11 @@ export const generateCustomers = (
   options?: GenerateCustomerOptions,
 ): Customer[] => {
   faker.seed(1);
-  return Array.from({ length: amount }, () => generateCustomer(options));
+  let previousCustomerArrivalTime = 0;
+
+  return Array.from({ length: amount }, () => {
+    const customer = generateCustomer(previousCustomerArrivalTime, options);
+    previousCustomerArrivalTime = customer.arrivalTime;
+    return customer;
+  });
 };
