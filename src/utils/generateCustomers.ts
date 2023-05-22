@@ -3,8 +3,12 @@ import { Customer } from 'types/global';
 
 interface GenerateCustomerOptions {
   goodsAmount?: {
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
+  };
+  arrivalTime?: {
+    min?: number;
+    max?: number;
   };
 }
 
@@ -12,7 +16,7 @@ const generateCustomer = (
   previousCustomerArrivalTime: number,
   options?: GenerateCustomerOptions,
 ): Customer => {
-  const { goodsAmount } = options || {};
+  const { goodsAmount, arrivalTime } = options || {};
   return {
     id: faker.string.uuid(),
     gender: faker.person.sexType(),
@@ -21,7 +25,7 @@ const generateCustomer = (
       max: goodsAmount?.max || 20,
     }),
     arrivalTime:
-      previousCustomerArrivalTime + faker.number.int({ min: 0, max: 60 }),
+      previousCustomerArrivalTime + faker.number.int({ min: arrivalTime?.min || 0, max: arrivalTime?.max || 60 }),
     priority: 0,
   };
 };
