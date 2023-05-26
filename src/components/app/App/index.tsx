@@ -1,4 +1,4 @@
-import { Button, ButtonGroup } from '@mui/material';
+import { Button, ButtonGroup, List, ListItem } from '@mui/material';
 import { ClockGroup } from 'components/unsorted/ClockGroup';
 import { CustomersTable } from 'components/unsorted/CustomersTable';
 import { Modal } from 'components/unsorted/Modal';
@@ -8,49 +8,31 @@ import { FC, useEffect, useMemo, useState } from 'react';
 import { CashDesk } from 'utils/cashDesk';
 import { Stores } from 'utils/constants';
 import { generateCustomers } from 'utils/generateCustomers';
+import { parseCustomersData } from 'utils/parseCustomersData';
 import {
-  prepareCustomers,
+  prepareCustomersData,
   PreparedCustomersData,
-} from 'utils/prepareCustomers';
-import { CustomerQueue } from 'utils/queue';
+} from 'utils/prepareCustomersData';
 
 import { Header } from '../Header';
 import { Layout } from '../Layout';
-
-const generatedCustomers = generateCustomers(100, { arrivalTime: { max: 5 } });
-const preparedCustomers = prepareCustomers(generatedCustomers);
 
 export const App: FC = () => {
   const [speed, setSpeed] = useState(1);
   const [dbCustomers, setDbCustomers] = useState<PreparedCustomersData>();
   const [showCustomersTable, setShowCustomersTable] = useState(false);
-  const customerQueue = useMemo(() => new CustomerQueue(), []);
-  // const cashDesk = new CashDesk({
-  //   open: true,
-  //   filters: { processingTimePerGoodItem: 1 },
-  // });
 
-  const { time, startStopwatch, stopStopwatch } = useStopwatch(speed);
+  const { time, startStopwatch, stopStopwatch, resetStopwatch } =
+    useStopwatch(speed);
 
-  useEffect(() => {
-    localforage.setItem(Stores.Customers, preparedCustomers);
-  }, []);
-
-  useEffect(() => {
-    localforage.getItem(Stores.Customers).then((dbCustomers) => {
-      setDbCustomers(dbCustomers as PreparedCustomersData);
-    });
-  }, []);
-
-  useEffect(() => {
-    for (let i = speed - 1; i >= 0; i--) {
-      const iterator = time - i;
-      if (iterator > 0 && dbCustomers?.[iterator]) {
-        // console.log(iterator, preparedCustomers[time - i]);
-        customerQueue.enqueue(dbCustomers[time - i]);
-      }
-    }
-  }, [time, speed]);
+  const cashDesk = useMemo(
+    () =>
+      new CashDesk({
+        open: true,
+        filters: { processingTimePerGoodItem: 1 },
+      }),
+    [],
+  );
 
   const handleCloseCustomersTableModal = () => {
     setShowCustomersTable(false);
@@ -60,18 +42,76 @@ export const App: FC = () => {
     setShowCustomersTable(true);
   };
 
+  const handleGetDbData = () => {
+    localforage.getItem(Stores.Customers).then((dbCustomers) => {
+      setDbCustomers(dbCustomers as PreparedCustomersData);
+    });
+  };
+
+  const handleGenerateData = () => {
+    const generatedCustomers = generateCustomers(100, {
+      arrivalTime: { max: 5 },
+    });
+    const preparedCustomers = prepareCustomersData(generatedCustomers);
+    localforage
+      .setItem(Stores.Customers, preparedCustomers)
+      .then((dbCustomers) => {
+        if (dbCustomers) {
+          setDbCustomers(dbCustomers as PreparedCustomersData);
+          alert('Покупців згенеровано!');
+        }
+        handleGetDbData();
+      });
+  };
+
+  const handleResetData = () => {
+    localforage.removeItem(Stores.Customers).then(() => {
+      setDbCustomers(undefined);
+      resetStopwatch();
+      alert('Покупців очищено!');
+    });
+  };
+
+  useEffect(() => {
+    handleGetDbData();
+  }, []);
+
+  useEffect(() => {
+    for (let i = speed - 1; i >= 0; i--) {
+      const iterator = time - i;
+      if (iterator > 0 && dbCustomers?.[iterator]) {
+        cashDesk.enqueue(dbCustomers[time - i]);
+      }
+    }
+  }, [time, speed]);
+
   return (
     <>
       <Header sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <ClockGroup
+          disabled={!dbCustomers}
           time={time}
           speed={speed}
           setSpeed={setSpeed}
           startStopwatch={startStopwatch}
           stopStopwatch={stopStopwatch}
+          resetStopwatch={resetStopwatch}
         />
         <ButtonGroup variant="contained">
-          <Button color="success">Generate data</Button>
+          <Button
+            onClick={handleResetData}
+            color="error"
+            disabled={!dbCustomers}
+          >
+            Reset data
+          </Button>
+          <Button
+            onClick={handleGenerateData}
+            color="success"
+            disabled={!!dbCustomers}
+          >
+            Generate data
+          </Button>
           <Button onClick={handleShowCustomersTableModal} color="info">
             Show data
           </Button>
@@ -79,13 +119,16 @@ export const App: FC = () => {
       </Header>
 
       <Layout>
-        {/* <List>
-        {customerQueue.queue.map((customer) => (
-          <ListItem key={customer.id}>
-            {customer.id} : {customer.arrivalTime}
-          </ListItem>
-        ))}
-      </List> */}
+        <>
+          {dbCustomers && Object.keys(dbCustomers)?.length}
+          <List>
+            {cashDesk.getQueue().map((customer) => (
+              <ListItem key={customer.id}>
+                {customer.id} : {customer.arrivalTime}
+              </ListItem>
+            ))}
+          </List>
+        </>
       </Layout>
 
       <Modal
@@ -93,7 +136,9 @@ export const App: FC = () => {
         open={showCustomersTable}
         onClose={handleCloseCustomersTableModal}
       >
-        <CustomersTable customers={generatedCustomers} />
+        <CustomersTable
+          customers={dbCustomers ? parseCustomersData(dbCustomers) : []}
+        />
       </Modal>
     </>
   );

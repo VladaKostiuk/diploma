@@ -1,5 +1,6 @@
 import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import StopIcon from '@mui/icons-material/Stop';
 import {
   Box,
   BoxProps,
@@ -18,6 +19,8 @@ export interface ClockGroupProps extends BoxProps {
   setSpeed: React.Dispatch<React.SetStateAction<number>>;
   startStopwatch: () => void;
   stopStopwatch: () => void;
+  resetStopwatch: () => void;
+  disabled?: boolean;
 }
 
 export const ClockGroup: FC<ClockGroupProps> = ({
@@ -26,7 +29,9 @@ export const ClockGroup: FC<ClockGroupProps> = ({
   setSpeed,
   startStopwatch,
   stopStopwatch,
+  resetStopwatch,
   sx,
+  disabled,
   ...props
 }) => {
   const handleChangeSpeed = (
@@ -37,7 +42,15 @@ export const ClockGroup: FC<ClockGroupProps> = ({
   };
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', ...sx }} {...props}>
-      <ButtonGroup size="medium" sx={{ mr: '12px' }}>
+      <ButtonGroup size="medium" disabled={disabled} sx={{ mr: '12px' }}>
+        <Button
+          title="Reset clock"
+          onClick={() => {
+            resetStopwatch();
+          }}
+        >
+          <StopIcon />
+        </Button>
         <Button
           title="Stop clock"
           onClick={() => {
@@ -57,6 +70,7 @@ export const ClockGroup: FC<ClockGroupProps> = ({
       </ButtonGroup>
       <Clock time={time} />
       <ToggleButtonGroup
+        disabled={disabled}
         sx={{ ml: '12px' }}
         onChange={handleChangeSpeed}
         value={speed}

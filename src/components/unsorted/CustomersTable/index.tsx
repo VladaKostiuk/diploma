@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -38,6 +39,14 @@ export const CustomersTable: FC<CustomersTableProps> = ({ customers }) => {
     'Час прибуття (секунда/-и)',
     'Приорітет',
   ];
+
+  if (customers.length === 0) {
+    return (
+      <Typography sx={{ ml: '12px' }} variant="h5">
+        Покупці відсутні...
+      </Typography>
+    );
+  }
 
   return (
     <TableContainer component={Paper}>

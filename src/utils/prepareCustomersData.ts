@@ -2,7 +2,7 @@ import { Customer } from 'types/global';
 
 export type PreparedCustomersData = Record<number, Customer[]>;
 
-export const prepareCustomers = (customers: Customer[]) => {
+export const prepareCustomersData = (customers: Customer[]) => {
   const data: PreparedCustomersData = customers.reduce(
     (accumulator: PreparedCustomersData, customer) => {
       const { arrivalTime } = customer || {};
