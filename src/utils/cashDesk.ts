@@ -33,4 +33,8 @@ export class CashDesk {
   getQueue() {
     return this.queue;
   }
+
+  resetQueue() {
+    this.queue = [];
+  }
 }

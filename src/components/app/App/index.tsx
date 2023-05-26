@@ -22,8 +22,13 @@ export const App: FC = () => {
   const [dbCustomers, setDbCustomers] = useState<PreparedCustomersData>();
   const [showCustomersTable, setShowCustomersTable] = useState(false);
 
-  const { time, startStopwatch, stopStopwatch, resetStopwatch } =
-    useStopwatch(speed);
+  const {
+    time,
+    startStopwatch,
+    stopStopwatch,
+    resetStopwatch,
+    active: stopwatchActive,
+  } = useStopwatch(speed);
 
   const cashDesk = useMemo(
     () =>
@@ -40,6 +45,11 @@ export const App: FC = () => {
 
   const handleShowCustomersTableModal = () => {
     setShowCustomersTable(true);
+  };
+
+  const handleResetQueue = () => {
+    resetStopwatch();
+    cashDesk.resetQueue();
   };
 
   const handleGetDbData = () => {
@@ -67,7 +77,7 @@ export const App: FC = () => {
   const handleResetData = () => {
     localforage.removeItem(Stores.Customers).then(() => {
       setDbCustomers(undefined);
-      resetStopwatch();
+      handleResetQueue();
       alert('Покупців очищено!');
     });
   };
@@ -77,25 +87,24 @@ export const App: FC = () => {
   }, []);
 
   useEffect(() => {
-    for (let i = speed - 1; i >= 0; i--) {
-      const iterator = time - i;
-      if (iterator > 0 && dbCustomers?.[iterator]) {
-        cashDesk.enqueue(dbCustomers[time - i]);
-      }
+    if (dbCustomers?.[time]) {
+      const customers = dbCustomers[time];
+      cashDesk.enqueue(customers);
     }
-  }, [time, speed]);
+  }, [time]);
 
   return (
     <>
       <Header sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <ClockGroup
+          active={stopwatchActive}
           disabled={!dbCustomers}
           time={time}
           speed={speed}
           setSpeed={setSpeed}
           startStopwatch={startStopwatch}
           stopStopwatch={stopStopwatch}
-          resetStopwatch={resetStopwatch}
+          resetStopwatch={handleResetQueue}
         />
         <ButtonGroup variant="contained">
           <Button

@@ -21,6 +21,7 @@ export interface ClockGroupProps extends BoxProps {
   stopStopwatch: () => void;
   resetStopwatch: () => void;
   disabled?: boolean;
+  active: boolean;
 }
 
 export const ClockGroup: FC<ClockGroupProps> = ({
@@ -32,6 +33,7 @@ export const ClockGroup: FC<ClockGroupProps> = ({
   resetStopwatch,
   sx,
   disabled,
+  active,
   ...props
 }) => {
   const handleChangeSpeed = (
@@ -51,22 +53,25 @@ export const ClockGroup: FC<ClockGroupProps> = ({
         >
           <StopIcon />
         </Button>
-        <Button
-          title="Stop clock"
-          onClick={() => {
-            stopStopwatch();
-          }}
-        >
-          <PauseIcon />
-        </Button>
-        <Button
-          onClick={() => {
-            startStopwatch();
-          }}
-          title="Start clock"
-        >
-          <PlayArrowIcon />
-        </Button>
+        {active ? (
+          <Button
+            title="Stop clock"
+            onClick={() => {
+              stopStopwatch();
+            }}
+          >
+            <PauseIcon />
+          </Button>
+        ) : (
+          <Button
+            onClick={() => {
+              startStopwatch();
+            }}
+            title="Start clock"
+          >
+            <PlayArrowIcon />
+          </Button>
+        )}
       </ButtonGroup>
       <Clock time={time} />
       <ToggleButtonGroup
