@@ -13,7 +13,8 @@ export const Clock: FC<ClockProps> = ({ time }) => {
 
   return (
     <Typography sx={{ fontSize: '16px', fontWeigth: 'bold' }}>
-      {formattedTime}
+      <span>{formattedTime}</span>
+      <span> ({time} секунд/-и)</span>
     </Typography>
   );
 };

@@ -10,5 +10,5 @@ export type Customer = {
 
 export type CashDeskFilters = {
   goodsLimitation?: number;
-  processingTimePerGoodItem?: number;
+  processingTimePerGoodItem: number;
 };

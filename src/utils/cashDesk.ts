@@ -2,11 +2,18 @@ import { CashDeskFilters, Customer } from 'types/global';
 
 export class CashDesk {
   queue: Customer[] = [];
+  servicedCustomers: Customer[] = [];
+  activeCustomer:
+    | (Customer & { serviceStartTime: number; serviceEndTime: number })
+    | null = null;
+
   filters: CashDeskFilters = {
-    processingTimePerGoodItem: undefined,
+    processingTimePerGoodItem: 1,
     goodsLimitation: undefined,
   };
   open = false;
+  free = true;
+  // free / if free => active customer (start/end time) / if (time = active customer end time) => free = true
 
   constructor({
     filters,
@@ -36,5 +43,47 @@ export class CashDesk {
 
   resetQueue() {
     this.queue = [];
+  }
+
+  resetCashDesk() {
+    this.queue = [];
+    this.servicedCustomers = [];
+    this.activeCustomer = null;
+  }
+
+  checkCashDeskAvailability(time: number) {
+    if (this.free || !this.activeCustomer) {
+      console.log('cash desk is free');
+      return true;
+    }
+    if (this.activeCustomer.serviceEndTime === time) {
+      this.servicedCustomers = [...this.servicedCustomers, this.activeCustomer];
+      this.activeCustomer = null;
+      this.free = true;
+      console.log('CUSTOMER SERVICED. cash desk is free');
+      return true;
+    }
+    console.log('cash desk is busy till', this.activeCustomer.serviceEndTime);
+    return false;
+  }
+
+  serviceCustomer(time: number) {
+    const cashDeskIsFree = this.checkCashDeskAvailability(time);
+    if (cashDeskIsFree && this.queue.length > 0) {
+      const customer = this.queue[0];
+      const serviceEndTime =
+        time + customer.goodsAmount * this.filters.processingTimePerGoodItem;
+
+      this.free = false;
+      this.dequeue();
+      this.activeCustomer = {
+        ...customer,
+        serviceStartTime: time,
+        serviceEndTime,
+      };
+      return [time, this.activeCustomer];
+    }
+    console.log(this.queue);
+    return 'cant service now';
   }
 }

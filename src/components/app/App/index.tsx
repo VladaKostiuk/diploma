@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, List, ListItem } from '@mui/material';
+import { Button, ButtonGroup, List, ListItem, Typography } from '@mui/material';
 import { ClockGroup } from 'components/unsorted/ClockGroup';
 import { CustomersTable } from 'components/unsorted/CustomersTable';
 import { Modal } from 'components/unsorted/Modal';
@@ -7,6 +7,7 @@ import localforage from 'localforage';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { CashDesk } from 'utils/cashDesk';
 import { Stores } from 'utils/constants';
+import { dummyCustomers } from 'utils/dummyCustomers';
 import { generateCustomers } from 'utils/generateCustomers';
 import { parseCustomersData } from 'utils/parseCustomersData';
 import {
@@ -47,9 +48,9 @@ export const App: FC = () => {
     setShowCustomersTable(true);
   };
 
-  const handleResetQueue = () => {
+  const handleResetCashDesk = () => {
     resetStopwatch();
-    cashDesk.resetQueue();
+    cashDesk.resetCashDesk();
   };
 
   const handleGetDbData = () => {
@@ -60,7 +61,7 @@ export const App: FC = () => {
 
   const handleGenerateData = () => {
     const generatedCustomers = generateCustomers(100, {
-      arrivalTime: { max: 5 },
+      arrivalTime: { min: 5, max: 10 },
     });
     const preparedCustomers = prepareCustomersData(generatedCustomers);
     localforage
@@ -77,14 +78,15 @@ export const App: FC = () => {
   const handleResetData = () => {
     localforage.removeItem(Stores.Customers).then(() => {
       setDbCustomers(undefined);
-      handleResetQueue();
+      handleResetCashDesk();
       alert('Покупців очищено!');
     });
   };
 
   useEffect(() => {
-    handleGetDbData();
-  }, []);
+    const response = cashDesk.serviceCustomer(time);
+    console.log(response);
+  }, [time]);
 
   useEffect(() => {
     if (dbCustomers?.[time]) {
@@ -92,6 +94,13 @@ export const App: FC = () => {
       cashDesk.enqueue(customers);
     }
   }, [time]);
+
+  useEffect(() => {
+    handleGetDbData();
+    // Dummy:
+    // const preparedCustomers = prepareCustomersData(dummyCustomers);
+    // setDbCustomers(preparedCustomers);
+  }, []);
 
   return (
     <>
@@ -104,7 +113,7 @@ export const App: FC = () => {
           setSpeed={setSpeed}
           startStopwatch={startStopwatch}
           stopStopwatch={stopStopwatch}
-          resetStopwatch={handleResetQueue}
+          resetStopwatch={handleResetCashDesk}
         />
         <ButtonGroup variant="contained">
           <Button
@@ -129,9 +138,26 @@ export const App: FC = () => {
 
       <Layout>
         <>
-          {dbCustomers && Object.keys(dbCustomers)?.length}
+          <Typography>Queue:</Typography>
           <List>
             {cashDesk.getQueue().map((customer) => (
+              <ListItem key={customer.id}>
+                {customer.id} : {customer.arrivalTime}
+              </ListItem>
+            ))}
+          </List>
+          <hr />
+          <Typography>Active customer:</Typography>
+          <Typography>id: {cashDesk.activeCustomer?.id}</Typography>
+          <Typography>
+            start time: {cashDesk.activeCustomer?.serviceStartTime}
+          </Typography>
+          <Typography>
+            end time: {cashDesk.activeCustomer?.serviceEndTime}
+          </Typography>
+          <hr />
+          <List>
+            {cashDesk.servicedCustomers.map((customer) => (
               <ListItem key={customer.id}>
                 {customer.id} : {customer.arrivalTime}
               </ListItem>
