@@ -1,12 +1,22 @@
-import { Button, ButtonGroup, List, ListItem, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Divider,
+  List,
+  ListItem,
+  Paper,
+  Typography,
+} from '@mui/material';
 import { ClockGroup } from 'components/unsorted/ClockGroup';
+import { CustomerMarker } from 'components/unsorted/CustomerMarker';
 import { CustomersTable } from 'components/unsorted/CustomersTable';
 import { Modal } from 'components/unsorted/Modal';
 import { useStopwatch } from 'hooks/useStopwatch';
 import localforage from 'localforage';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { CashDesk } from 'utils/cashDesk';
-import { Stores } from 'utils/constants';
+import { CustomerMarkerStatus, Stores } from 'utils/constants';
 import { dummyCustomers } from 'utils/dummyCustomers';
 import { generateCustomers } from 'utils/generateCustomers';
 import { parseCustomersData } from 'utils/parseCustomersData';
@@ -54,9 +64,13 @@ export const App: FC = () => {
   };
 
   const handleGetDbData = () => {
-    localforage.getItem(Stores.Customers).then((dbCustomers) => {
-      setDbCustomers(dbCustomers as PreparedCustomersData);
-    });
+    // localforage.getItem(Stores.Customers).then((dbCustomers) => {
+    //   setDbCustomers(dbCustomers as PreparedCustomersData);
+    // });
+
+    // Dummy:
+    const preparedCustomers = prepareCustomersData(dummyCustomers);
+    setDbCustomers(preparedCustomers);
   };
 
   const handleGenerateData = () => {
@@ -97,10 +111,9 @@ export const App: FC = () => {
 
   useEffect(() => {
     handleGetDbData();
-    // Dummy:
-    // const preparedCustomers = prepareCustomersData(dummyCustomers);
-    // setDbCustomers(preparedCustomers);
   }, []);
+
+  const { activeCustomer } = cashDesk;
 
   return (
     <>
@@ -136,34 +149,89 @@ export const App: FC = () => {
         </ButtonGroup>
       </Header>
 
-      <Layout>
-        <>
-          <Typography>Queue:</Typography>
-          <List>
+      <Layout
+        sx={{
+          px: '12px',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '10px',
+        }}
+      >
+        <Box>
+          <Typography>Черга:</Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '8px',
+              height: '140px',
+              backgroundImage: 'url("https://i.imgur.com/sNU1duD.png")',
+              backgroundSize: 'cover',
+              boxShadow: 'inset 0px 0px 277px 3px #4c3f37;',
+              p: '12px',
+            }}
+          >
             {cashDesk.getQueue().map((customer) => (
-              <ListItem key={customer.id}>
-                {customer.id} : {customer.arrivalTime}
-              </ListItem>
+              <Box key={customer.id}>
+                <CustomerMarker
+                  title={customer.id}
+                  status={CustomerMarkerStatus.IN_QUEUE}
+                  customer={customer}
+                />
+              </Box>
             ))}
-          </List>
-          <hr />
-          <Typography>Active customer:</Typography>
-          <Typography>id: {cashDesk.activeCustomer?.id}</Typography>
-          <Typography>
-            start time: {cashDesk.activeCustomer?.serviceStartTime}
-          </Typography>
-          <Typography>
-            end time: {cashDesk.activeCustomer?.serviceEndTime}
-          </Typography>
-          <hr />
-          <List>
+          </Box>
+          <Divider sx={{ my: '12px' }} />
+          <Typography>Покупець на касі:</Typography>
+          <Box
+            sx={{
+              backgroundImage: 'url("https://i.imgur.com/sJ1emsB.png")',
+              backgroundSize: '500px 100%',
+              backgroundRepeat: 'no-repeat',
+              backgroundColor: '#509fa4',
+              height: '150px',
+              p: '12px',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <CustomerMarker
+              title={activeCustomer?.id}
+              status={CustomerMarkerStatus.IN_SERVICE}
+              customer={activeCustomer}
+            />
+            {activeCustomer && (
+              <Box sx={{ ml: '12px', width: '50%' }}>
+                <Typography>
+                  Час початку обслуговування:&nbsp;
+                  <span>{cashDesk.activeCustomer?.serviceStartTime}</span>
+                </Typography>
+                <Typography>
+                  Час кінця обслуговування:&nbsp;
+                  <span>{cashDesk.activeCustomer?.serviceEndTime}</span>
+                </Typography>
+              </Box>
+            )}
+          </Box>
+          <Divider sx={{ my: '12px' }} />
+          <Typography>Обслужені покупці:</Typography>
+          <Box
+            sx={{ p: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}
+          >
             {cashDesk.servicedCustomers.map((customer) => (
-              <ListItem key={customer.id}>
-                {customer.id} : {customer.arrivalTime}
-              </ListItem>
+              <Box key={customer.id}>
+                <CustomerMarker
+                  title={customer?.id}
+                  status={CustomerMarkerStatus.SERVICED}
+                  customer={customer}
+                />
+                {/* {customer.id} : {customer.arrivalTime} */}
+              </Box>
             ))}
-          </List>
-        </>
+          </Box>
+        </Box>
+        <Paper></Paper>
       </Layout>
 
       <Modal

@@ -101,6 +101,12 @@ export const ClockGroup: FC<ClockGroupProps> = ({
         >
           2
         </ToggleButton>
+        <ToggleButton
+          sx={{ fontSize: '16px', fontWeight: 'bold', width: '32px' }}
+          value={5}
+        >
+          5
+        </ToggleButton>
       </ToggleButtonGroup>
     </Box>
   );

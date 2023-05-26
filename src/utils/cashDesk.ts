@@ -1,10 +1,10 @@
-import { CashDeskFilters, Customer } from 'types/global';
+import { CashDeskFilters, Customer, CustomerInQueue } from 'types/global';
 
 export class CashDesk {
   queue: Customer[] = [];
   servicedCustomers: Customer[] = [];
   activeCustomer:
-    | (Customer & { serviceStartTime: number; serviceEndTime: number })
+    | CustomerInQueue
     | null = null;
 
   filters: CashDeskFilters = {

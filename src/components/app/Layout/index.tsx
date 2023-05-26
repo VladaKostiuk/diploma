@@ -1,10 +1,14 @@
-import { Box } from '@mui/material';
+import { Box, BoxProps } from '@mui/material';
 import { FC } from 'react';
 
 export type LayoutProps = {
   children?: JSX.Element | JSX.Element[];
-};
+} & BoxProps;
 
-export const Layout: FC<LayoutProps> = ({ children }) => {
-  return <Box sx={{ mt: '60px' }}>{children}</Box>;
+export const Layout: FC<LayoutProps> = ({ children, sx, ...props }) => {
+  return (
+    <Box sx={{ mt: '60px', ...sx }} {...props}>
+      {children}
+    </Box>
+  );
 };

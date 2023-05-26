@@ -8,6 +8,11 @@ export type Customer = {
   priority: number;
 };
 
+export type CustomerInQueue = Customer & {
+  serviceStartTime: number;
+  serviceEndTime: number;
+};
+
 export type CashDeskFilters = {
   goodsLimitation?: number;
   processingTimePerGoodItem: number;
