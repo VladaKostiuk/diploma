@@ -7,3 +7,8 @@ export type Customer = {
   arrivalTime: number;
   priority: number;
 };
+
+export type CashDeskFilters = {
+  goodsLimitation?: number;
+  processingTimePerGoodItem?: number;
+};

@@ -10,6 +10,10 @@ export interface ClockProps {
 export const Clock: FC<ClockProps> = ({ time }) => {
   const date = new Date(1000 * time);
   const formattedTime = formatTime(date);
-  
-  return <Typography>{formattedTime}</Typography>;
+
+  return (
+    <Typography sx={{ fontSize: '16px', fontWeigth: 'bold' }}>
+      {formattedTime}
+    </Typography>
+  );
 };
