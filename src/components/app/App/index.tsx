@@ -1,26 +1,12 @@
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Divider,
-  List,
-  ListItem,
-  Paper,
-  TextField,
-  Typography,
-} from '@mui/material';
-import { ClockGroup } from 'components/unsorted/ClockGroup';
+import { Box, Divider, Typography } from '@mui/material';
 import { CustomerMarker } from 'components/unsorted/CustomerMarker';
-import { CustomersTable } from 'components/unsorted/CustomersTable';
-import { Modal } from 'components/unsorted/Modal';
+import { Filters } from 'components/unsorted/Filters';
 import { useStopwatch } from 'hooks/useStopwatch';
 import localforage from 'localforage';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { CashDesk } from 'utils/cashDesk';
 import { CustomerMarkerStatus, Stores } from 'utils/constants';
-import { dummyCustomers } from 'utils/dummyCustomers';
 import { generateCustomers } from 'utils/generateCustomers';
-import { parseCustomersData } from 'utils/parseCustomersData';
 import {
   prepareCustomersData,
   PreparedCustomersData,
@@ -32,12 +18,11 @@ import { Layout } from '../Layout';
 export const App: FC = () => {
   const [speed, setSpeed] = useState(1);
   const [dbCustomers, setDbCustomers] = useState<PreparedCustomersData>();
-  const [showCustomersTable, setShowCustomersTable] = useState(false);
 
   const {
     time,
     startStopwatch,
-    stopStopwatch,
+    pauseStopwatch,
     resetStopwatch,
     active: stopwatchActive,
   } = useStopwatch(speed);
@@ -50,14 +35,6 @@ export const App: FC = () => {
       }),
     [],
   );
-
-  const handleCloseCustomersTableModal = () => {
-    setShowCustomersTable(false);
-  };
-
-  const handleShowCustomersTableModal = () => {
-    setShowCustomersTable(true);
-  };
 
   const handleResetCashDesk = () => {
     resetStopwatch();
@@ -117,38 +94,21 @@ export const App: FC = () => {
   const { activeCustomer } = cashDesk;
 
   return (
-    <>
-      <Header sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <ClockGroup
-          active={stopwatchActive}
-          disabled={!dbCustomers}
-          time={time}
-          speed={speed}
-          setSpeed={setSpeed}
-          startStopwatch={startStopwatch}
-          stopStopwatch={stopStopwatch}
-          resetStopwatch={handleResetCashDesk}
-        />
-        <ButtonGroup variant="contained">
-          <Button
-            onClick={handleResetData}
-            color="error"
-            disabled={!dbCustomers}
-          >
-            Reset data
-          </Button>
-          <Button
-            onClick={handleGenerateData}
-            color="success"
-            disabled={!!dbCustomers}
-          >
-            Generate data
-          </Button>
-          <Button onClick={handleShowCustomersTableModal} color="info">
-            Show data
-          </Button>
-        </ButtonGroup>
-      </Header>
+    <Box>
+      <Header
+        timer={{
+          active: stopwatchActive,
+          time,
+          startStopwatch,
+          pauseStopwatch,
+          resetStopwatch: handleResetCashDesk,
+          speed,
+          setSpeed,
+        }}
+        customersData={dbCustomers}
+        resetData={handleResetData}
+        generateData={handleGenerateData}
+      />
 
       <Layout
         sx={{
@@ -227,87 +187,12 @@ export const App: FC = () => {
                   status={CustomerMarkerStatus.SERVICED}
                   customer={customer}
                 />
-                {/* {customer.id} : {customer.arrivalTime} */}
               </Box>
             ))}
           </Box>
         </Box>
-        <Paper sx={{ p: '12px' }}>
-          <Box>
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 'bold',
-                textDecoration: 'underline',
-                mb: '12px',
-              }}
-            >
-              Загальні фільтри:
-            </Typography>
-
-            <Box sx={{ display: 'flex', gap: '8px', mb: '24px' }}>
-              <TextField
-                label="Максимальна кількість кас"
-                size="small"
-                value={1}
-                disabled
-              />
-              <TextField
-                label="Максимальний час обслуговування"
-                size="small"
-                value="-"
-                disabled
-              />
-            </Box>
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 'bold',
-                textDecoration: 'underline',
-                mb: '12px',
-              }}
-            >
-              Фільтри каси №1:
-            </Typography>
-            <Box sx={{ display: 'flex', gap: '8px', mb: '24px' }}>
-              <TextField
-                label="Стан каси"
-                size="small"
-                value="Відкрита"
-                disabled
-              />
-              <TextField
-                label="Час обробки одиниці товару"
-                size="small"
-                value={1}
-                disabled
-              />
-              <TextField
-                label="Максимальна кількість товарів на 1 людину"
-                size="small"
-                value="-"
-                disabled
-              />
-            </Box>
-            <Button variant="contained" color="info">
-              Відкрити касу
-            </Button>
-            <Button sx={{ml: '8px'}} variant="contained" color="warning">
-              Закрити касу
-            </Button>
-          </Box>
-        </Paper>
+        {/* <Filters /> */}
       </Layout>
-
-      <Modal
-        title="Згенеровані покупці:"
-        open={showCustomersTable}
-        onClose={handleCloseCustomersTableModal}
-      >
-        <CustomersTable
-          customers={dbCustomers ? parseCustomersData(dbCustomers) : []}
-        />
-      </Modal>
-    </>
+    </Box>
   );
 };

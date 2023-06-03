@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 
-export const useStopwatch = (speed = 1) => {
+export interface Stopwatch {
+  time: number;
+  active: boolean;
+  startStopwatch: () => void;
+  pauseStopwatch: () => void;
+  resetStopwatch: () => void;
+}
+
+export const useStopwatch = (speed = 1): Stopwatch => {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -16,7 +24,7 @@ export const useStopwatch = (speed = 1) => {
     setIsRunning(true);
   };
 
-  const handleStopStopwatch = () => {
+  const handlePauseStopwatch = () => {
     setIsRunning(false);
   };
 
@@ -29,7 +37,7 @@ export const useStopwatch = (speed = 1) => {
     time,
     active: isRunning,
     startStopwatch: handleStartStopwatch,
-    stopStopwatch: handleStopStopwatch,
+    pauseStopwatch: handlePauseStopwatch,
     resetStopwatch: handleResetStopWatch,
   };
 };

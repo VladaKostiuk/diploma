@@ -3,7 +3,9 @@ import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
+import TableContainer, {
+  TableContainerProps,
+} from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { FC } from 'react';
@@ -11,9 +13,12 @@ import { Customer } from 'types/global';
 
 export type CustomersTableProps = {
   customers: Customer[];
-};
+} & TableContainerProps;
 
-export const CustomersTable: FC<CustomersTableProps> = ({ customers }) => {
+export const CustomersTable: FC<CustomersTableProps> = ({
+  customers,
+  ...rest
+}) => {
   const getTableCells = (customer: Customer) => {
     const customerValues = Object.entries(customer);
     return customerValues.map(([key, value]) => (
@@ -49,7 +54,7 @@ export const CustomersTable: FC<CustomersTableProps> = ({ customers }) => {
   }
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} {...rest}>
       <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
@@ -62,7 +67,6 @@ export const CustomersTable: FC<CustomersTableProps> = ({ customers }) => {
         </TableHead>
         <TableBody>
           {getTableRows(customers)}
-          {/* {customers.map((customer) => getTableRow(customer))} */}
         </TableBody>
       </Table>
     </TableContainer>
