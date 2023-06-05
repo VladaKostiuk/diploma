@@ -40,7 +40,9 @@ export const ClockGroup: FC<ClockGroupProps> = ({
     event: React.MouseEvent<HTMLElement>,
     newSpeed: number,
   ) => {
-    setSpeed(newSpeed);
+    if (newSpeed !== null) {
+      setSpeed(newSpeed);
+    }
   };
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', ...sx }} {...props}>
@@ -50,6 +52,7 @@ export const ClockGroup: FC<ClockGroupProps> = ({
           onClick={() => {
             resetStopwatch();
           }}
+          disabled={!active && !time}
         >
           <StopIcon />
         </Button>

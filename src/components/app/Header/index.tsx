@@ -1,10 +1,10 @@
-import { Box, Button, ButtonGroup } from '@mui/material';
+import TuneIcon from '@mui/icons-material/Tune';
+import { AppBar, Box, Button, ButtonGroup, IconButton } from '@mui/material';
 import { ClockGroup } from 'components/unsorted/ClockGroup';
 import { CustomersTable } from 'components/unsorted/CustomersTable';
 import { Modal } from 'components/unsorted/Modal';
 import { Stopwatch } from 'hooks/useStopwatch';
 import { Dispatch, FC, SetStateAction, useState } from 'react';
-import { Optional } from 'types/global';
 import { parseCustomersData } from 'utils/parseCustomersData';
 import { PreparedCustomersData } from 'utils/prepareCustomersData';
 
@@ -16,6 +16,7 @@ export type HeaderProps = {
   customersData: PreparedCustomersData | undefined;
   resetData: () => void;
   generateData: () => void;
+  handleShowFilters: () => void;
 };
 
 export const Header: FC<HeaderProps> = ({
@@ -23,6 +24,7 @@ export const Header: FC<HeaderProps> = ({
   customersData,
   resetData,
   generateData,
+  handleShowFilters,
 }) => {
   const {
     active: stopwatchActive,
@@ -45,9 +47,9 @@ export const Header: FC<HeaderProps> = ({
   };
   return (
     <>
-      <Box
+      <AppBar
+        position="fixed"
         sx={{
-          position: 'fixed',
           top: 0,
           left: 0,
           width: '100vw',
@@ -55,6 +57,7 @@ export const Header: FC<HeaderProps> = ({
           background: 'lightgrey',
           zIndex: 10,
           display: 'flex',
+          flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
           px: '12px',
@@ -70,22 +73,31 @@ export const Header: FC<HeaderProps> = ({
           stopStopwatch={pauseStopwatch}
           resetStopwatch={resetStopwatch}
         />
-        <ButtonGroup variant="contained">
-          <Button onClick={resetData} color="error" disabled={!customersData}>
-            Reset data
-          </Button>
+        <Box sx={{ display: 'flex', gap: '16px' }}>
+          <ButtonGroup size="small" variant="outlined">
+            <Button onClick={resetData} color="error" disabled={!customersData}>
+              Reset data
+            </Button>
+            <Button
+              onClick={generateData}
+              color="success"
+              disabled={!!customersData}
+            >
+              Generate data
+            </Button>
+            <Button onClick={handleShowCustomersTableModal} color="info">
+              Show data
+            </Button>
+          </ButtonGroup>
           <Button
-            onClick={generateData}
-            color="success"
-            disabled={!!customersData}
+            sx={{ borderRadius: '5px' }}
+            variant="contained"
+            onClick={handleShowFilters}
           >
-            Generate data
+            <TuneIcon />
           </Button>
-          <Button onClick={handleShowCustomersTableModal} color="info">
-            Show data
-          </Button>
-        </ButtonGroup>
-      </Box>
+        </Box>
+      </AppBar>
       <Modal
         title="Згенеровані покупці:"
         open={showCustomersTable}

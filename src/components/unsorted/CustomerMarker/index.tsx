@@ -1,10 +1,10 @@
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
-import { Box, BoxProps } from '@mui/material';
+import { Avatar, AvatarProps } from '@mui/material';
 import { FC } from 'react';
 import { Customer } from 'types/global';
 import { CustomerMarkerStatus } from 'utils/constants';
 
-export interface CustomerMarkerProps extends BoxProps {
+export interface CustomerMarkerProps extends AvatarProps {
   status: CustomerMarkerStatus;
   customer: Customer | null;
 }
@@ -19,41 +19,38 @@ export const CustomerMarker: FC<CustomerMarkerProps> = ({
     return null;
   }
 
-  let statusColor;
-  if (status === CustomerMarkerStatus.IN_QUEUE && customer.gender === 'male') {
-    statusColor = 'lightblue';
-  } else if (
-    status === CustomerMarkerStatus.IN_QUEUE &&
-    customer.gender === 'female'
-  ) {
-    statusColor = 'pink';
-  } else if (status === CustomerMarkerStatus.IN_SERVICE) {
-    statusColor = 'green';
-  } else {
-    statusColor = 'gray';
-  }
+  const backgroundColor = (() => {
+    if (customer.gender === 'male') {
+      return 'lightBlue';
+    }
+    if (customer.gender === 'female') {
+      return 'pink';
+    }
+    return 'lightgrey';
+  })();
+
+  const border = (() => {
+    if (status === CustomerMarkerStatus.IN_SERVICE) {
+      return '2px solid lime !important';
+    }
+    return '1px solid white !important';
+  })();
 
   return (
-    <Box
+    <Avatar
       sx={{
-        width: '45px',
-        height: '45px',
-        borderRadius: '50px',
-        border: `3px solid ${statusColor}`,
-        background: 'lightgray',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: '14px',
-        fontWeight: 'bold',
-        cursor: 'pointer',
-        p: '4px',
-        ...sx,
+        '&.MuiAvatar-root': {
+          width: '30px',
+          height: '30px',
+          fontSize: '14px',
+          border,
+          bgcolor: backgroundColor,
+        },
       }}
       {...props}
     >
       {customer.goodsAmount}
-      <ShoppingBasketIcon sx={{ ml: '2px', fontSize: '14px' }} />
-    </Box>
+      {/* <ShoppingBasketIcon sx={{ ml: '2px', fontSize: '14px' }} /> */}
+    </Avatar>
   );
 };

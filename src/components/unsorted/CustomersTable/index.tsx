@@ -27,7 +27,7 @@ export const CustomersTable: FC<CustomersTableProps> = ({
   };
 
   const getTableRows = (tableCustomers: Customer[]) =>
-    customers.map((customer, index) => {
+    tableCustomers.map((customer, index) => {
       return (
         <TableRow key={customer.id}>
           <TableCell>{index + 1}</TableCell>
@@ -65,9 +65,7 @@ export const CustomersTable: FC<CustomersTableProps> = ({
             ))}
           </TableRow>
         </TableHead>
-        <TableBody>
-          {getTableRows(customers)}
-        </TableBody>
+        <TableBody>{getTableRows(customers)}</TableBody>
       </Table>
     </TableContainer>
   );
