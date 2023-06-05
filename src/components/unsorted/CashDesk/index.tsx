@@ -146,7 +146,7 @@ export const CashDesk: FC<CashDeskProps> = ({ cashDesk, orderNumber }) => {
         />
       </Box>
       <Divider />
-      <Box>
+      <Box sx={{ height: '65px' }}>
         <Typography sx={{ fontWeight: 'bold', mb: '4px' }}>
           Обслужені:
         </Typography>
