@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import _ from 'lodash';
-import { Customer, ShopFilters } from 'types/global';
+import { CashDeskFilters, Customer, ShopFilters } from 'types/global';
 
 import { CashDesk } from './cashDesk';
 
@@ -16,8 +16,8 @@ export class Shop {
 
   initializeShop = (filters: ShopFilters) => {
     this.shopFilters = filters;
-    [...Array(filters.totalCashDesks).keys()].forEach(() => {
-      this.addCashDesk();
+    filters.cashDesks.forEach((cashDeskFilters) => {
+      this.addCashDesk(cashDeskFilters);
     });
   };
 
@@ -32,8 +32,8 @@ export class Shop {
     return dequeuedCustomer;
   };
 
-  addCashDesk = (filters = { processingTimePerGoodItem: 1 }) => {
-    const cashDesk = new CashDesk({ filters });
+  addCashDesk = (filters: CashDeskFilters) => {
+    const cashDesk = new CashDesk(filters);
     this.cashDesks[cashDesk.id] = cashDesk;
     return this.getCashDesks();
   };
@@ -49,7 +49,7 @@ export class Shop {
   openCashDesk = (cashDeskId: string) => {
     const cashDesk = this.cashDesks[cashDeskId];
     if (cashDesk) {
-      cashDesk.open = true;
+      cashDesk.filters.open = true;
     }
     return this.getCashDesks();
   };
@@ -96,7 +96,7 @@ export class Shop {
         updatedCashDesk.resetUnservedCustomers();
       }
 
-      if (!updatedCashDesk.open) {
+      if (!updatedCashDesk.filters.open) {
         return null;
       }
 

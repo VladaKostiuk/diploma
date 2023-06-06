@@ -1,3 +1,5 @@
+import { CashDeskFilters } from 'types/global';
+
 export enum Priorities {}
 
 export enum Stores {
@@ -9,3 +11,8 @@ export enum CustomerMarkerStatus {
   IN_SERVICE = 'in_service',
   SERVICED = 'serviced',
 }
+
+export const initialCashDeskFilters: CashDeskFilters = {
+  open: false,
+  processingTimePerGoodItem: 1,
+};

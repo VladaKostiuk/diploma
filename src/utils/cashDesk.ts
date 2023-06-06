@@ -12,24 +12,14 @@ export class CashDesk {
   activeCustomerServingTime = 0;
   servingTime = 0;
 
-  open = false;
+  filters: CashDeskFilters;
 
-  filters: CashDeskFilters = {
-    processingTimePerGoodItem: 1,
-    goodsLimitation: undefined,
-  };
-
-  constructor({
-    filters,
-  }: {
-    filters: Partial<CashDeskFilters> &
-      Required<Pick<CashDeskFilters, 'processingTimePerGoodItem'>>;
-  }) {
+  constructor(filters: CashDeskFilters) {
     this.filters = filters;
   }
 
   calculateCustomerServingTime = (customerGoodsAmount: number) => {
-    return customerGoodsAmount * this.filters.processingTimePerGoodItem;
+    return customerGoodsAmount * this.filters?.processingTimePerGoodItem;
   };
 
   resetCashDesk() {
@@ -44,7 +34,7 @@ export class CashDesk {
   }
 
   openCashDesk = () => {
-    this.open = true;
+    this.filters.open = true;
     return this;
   };
 
@@ -53,7 +43,7 @@ export class CashDesk {
   };
 
   closeCashDesk = () => {
-    this.open = false;
+    this.filters.open = false;
     this.unservedCustomers = this.queue;
     this.queue = [];
     this.queueServingTime = 0;
@@ -85,7 +75,7 @@ export class CashDesk {
   }
 
   private checkCashDeskAvailability() {
-    return !this.activeCustomer && this.open;
+    return !this.activeCustomer && this.filters.open;
   }
 
   private serviceActiveCustomer = (

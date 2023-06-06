@@ -1,4 +1,5 @@
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import InfoIcon from '@mui/icons-material/Info';
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
 import SettingsIcon from '@mui/icons-material/Settings';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
@@ -7,6 +8,7 @@ import {
   Box,
   Divider,
   IconButton,
+  Menu,
   Typography,
 } from '@mui/material';
 import { FC, useMemo, useState } from 'react';
@@ -27,7 +29,7 @@ export const CashDesk: FC<CashDeskProps> = ({
   time,
 }) => {
   const {
-    open: cashDeskOpen,
+    filters,
     queue,
     activeCustomer,
     servicedCustomers,
@@ -36,15 +38,29 @@ export const CashDesk: FC<CashDeskProps> = ({
     activeCustomerServingTime,
     queueServingTime,
   } = cashDesk || {};
-  const [open, setOpen] = useState(cashDeskOpen);
+  const [open, setOpen] = useState(filters.open);
+  const [modalAnchorEl, setModalAnchorEl] = useState<null | HTMLElement>(null);
+
+  const modalOpen = Boolean(modalAnchorEl);
+
+  const handleOpenModal = (event: React.MouseEvent<HTMLElement>) => {
+    setModalAnchorEl(event.currentTarget);
+  };
+  const handleCloseModal = () => {
+    setModalAnchorEl(null);
+  };
 
   const handleOpenCashDesk = () => {
-    const { open: cashDeskOpen } = cashDesk.openCashDesk();
+    const {
+      filters: { open: cashDeskOpen },
+    } = cashDesk.openCashDesk();
     setOpen(cashDeskOpen);
   };
 
   const handleCloseCashDesk = () => {
-    const { open: cashDeskOpen } = cashDesk.closeCashDesk();
+    const {
+      filters: { open: cashDeskOpen },
+    } = cashDesk.closeCashDesk();
     setOpen(cashDeskOpen);
   };
 
@@ -97,9 +113,25 @@ export const CashDesk: FC<CashDeskProps> = ({
             #{open ? 'відкрита' : 'закрита'}
           </Typography>
         </Box>
-        <IconButton>
-          <SettingsIcon />
+        <IconButton onClick={handleOpenModal}>
+          {/* <SettingsIcon /> */}
+          <InfoIcon />
         </IconButton>
+        <Menu
+          anchorEl={modalAnchorEl}
+          open={modalOpen}
+          onClose={handleCloseModal}
+          onClick={handleCloseModal}
+        >
+          <Typography
+            sx={{ display: 'flex', flexDirection: 'column', p: '8px' }}
+          >
+            Час обробки 1 товару:&nbsp;
+            <Typography component="span" fontWeight="bold">
+              {cashDesk.filters.processingTimePerGoodItem} секунда(-и)
+            </Typography>
+          </Typography>
+        </Menu>
       </Box>
 
       <Box

@@ -10,12 +10,18 @@ export type Customer = {
   priority: number;
 };
 
+export type PoissonProcessCustomer = Pick<
+  Customer,
+  'id' | 'gender' | 'goodsAmount' | 'priority'
+>;
+
 export type CustomerInQueue = Customer & {
   serviceStartTime: number;
   serviceEndTime: number;
 };
 
 export type CashDeskFilters = {
+  open: boolean;
   goodsLimitation?: number;
   processingTimePerGoodItem: number;
 };
@@ -24,4 +30,5 @@ export type ShopFilters = {
   totalCashDesks: number;
   maximalServingTime: number;
   priorityInService: boolean;
-}
+  cashDesks: CashDeskFilters[];
+};

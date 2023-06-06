@@ -7,7 +7,7 @@ import localforage from 'localforage';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { Customer, ShopFilters } from 'types/global';
 import { CashDesk } from 'utils/cashDesk';
-import { Stores } from 'utils/constants';
+import { initialCashDeskFilters, Stores } from 'utils/constants';
 import { dummyCustomers } from 'utils/dummyCustomers';
 import { generateCustomers } from 'utils/generateCustomers';
 import {
@@ -23,6 +23,7 @@ const initialShopFilters: ShopFilters = {
   maximalServingTime: 0,
   totalCashDesks: 1,
   priorityInService: false,
+  cashDesks: [initialCashDeskFilters],
 };
 
 export const App: FC = () => {
@@ -43,6 +44,19 @@ export const App: FC = () => {
   } = useStopwatch(speed);
 
   const shop = useMemo(() => new ShopClass(shopFilters), [shopFilters]);
+
+  // const poisson = useMemo(
+  //   () =>
+  //     poissonProcess.create(2000, function message() {
+  //       console.log('A message arrived.');
+  //       setpc((prev) => [...prev, generatePoissonProcessCustomer()]);
+  //     }),
+  //   [],
+  // );
+
+  // const handleStartApplication = () => {
+  //   poisson.start();
+  // };
 
   const handleShowDrawer = () => {
     setShowDrawer(true);
@@ -100,8 +114,8 @@ export const App: FC = () => {
   };
 
   const handleAddCashDesk = () => {
-    const shopCashDesks = shop.addCashDesk();
-    setCashDesks(shopCashDesks);
+    // const shopCashDesks = shop.addCashDesk();
+    // setCashDesks(shopCashDesks);
   };
 
   useEffect(() => {
@@ -141,6 +155,7 @@ export const App: FC = () => {
           px: '12px',
         }}
       >
+        {/* <Button onClick={handleStartApplication}>Start</Button> */}
         <Box
           sx={{
             display: 'grid',
@@ -152,7 +167,9 @@ export const App: FC = () => {
           <Shop
             time={time}
             cashDesks={cashDesks}
-            handleAddCashDesk={handleAddCashDesk}
+            // handleAddCashDesk={handleAddCashDesk}
+            // TODO: Temp solution;
+            handleAddCashDesk={handleShowDrawer}
           />
         </Box>
 
