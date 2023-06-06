@@ -1,5 +1,5 @@
 import TuneIcon from '@mui/icons-material/Tune';
-import { AppBar, Box, Button, ButtonGroup, IconButton } from '@mui/material';
+import { AppBar, Box, Button, ButtonGroup } from '@mui/material';
 import { ClockGroup } from 'components/unsorted/ClockGroup';
 import { CustomersTable } from 'components/unsorted/CustomersTable';
 import { Modal } from 'components/unsorted/Modal';

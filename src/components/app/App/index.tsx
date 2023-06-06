@@ -1,10 +1,12 @@
 import CancelIcon from '@mui/icons-material/Cancel';
-import { Box, Button, Drawer, IconButton } from '@mui/material';
+import { Box, Button, Drawer, IconButton, Typography } from '@mui/material';
 import { Filters } from 'components/unsorted/Filters';
 import { Shop } from 'components/unsorted/Shop';
 import { useStopwatch } from 'hooks/useStopwatch';
 import localforage from 'localforage';
 import { FC, useEffect, useMemo, useState } from 'react';
+import { Customer } from 'types/global';
+import { CashDesk } from 'utils/cashDesk';
 import { Stores } from 'utils/constants';
 import { dummyCustomers } from 'utils/dummyCustomers';
 import { generateCustomers } from 'utils/generateCustomers';
@@ -21,6 +23,8 @@ export const App: FC = () => {
   const [speed, setSpeed] = useState(1);
   const [dbCustomers, setDbCustomers] = useState<PreparedCustomersData>();
   const [showFilters, setShowFilters] = useState(false);
+  const [unservedCustomers, setUnservedCustomers] = useState<Customer[]>([]);
+  const [cashDesks, setCashDesks] = useState<CashDesk[]>([]);
 
   const {
     time,
@@ -30,7 +34,7 @@ export const App: FC = () => {
     active: stopwatchActive,
   } = useStopwatch(speed);
 
-  const shop = useMemo(() => new ShopClass({ cashDesksAmount: 2 }), []);
+  const shop = useMemo(() => new ShopClass({ cashDesksAmount: 1 }), []);
 
   const handleShowFilters = () => {
     setShowFilters(true);
@@ -67,7 +71,7 @@ export const App: FC = () => {
       .then((dbCustomers) => {
         if (dbCustomers) {
           setDbCustomers(dbCustomers as PreparedCustomersData);
-          alert('Покупців згенеровано!');
+          // alert('Покупців згенеровано!');
         }
         handleGetDbData();
       });
@@ -77,13 +81,23 @@ export const App: FC = () => {
     localforage.removeItem(Stores.Customers).then(() => {
       setDbCustomers(undefined);
       handleResetShop();
-      alert('Покупців очищено!');
+      // alert('Покупців очищено!');
     });
+  };
+
+  const handleOpenCashDesk = () => {
+    const shopCashDesks = shop.openCashDesk();
+    setCashDesks(shopCashDesks);
   };
 
   useEffect(() => {
     const customers = dbCustomers?.[time];
-    shop.updateShop(time, customers);
+    const updatedShop = shop.updateShop(time, customers);
+    const { unservedCustomers: shopUnservedCustomers } = updatedShop || {};
+    if (unservedCustomers) {
+      setUnservedCustomers(shopUnservedCustomers);
+    }
+    setCashDesks(updatedShop.getCashDesks());
   }, [time]);
 
   useEffect(() => {
@@ -111,9 +125,6 @@ export const App: FC = () => {
       <Layout
         sx={{
           px: '12px',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '10px',
         }}
       >
         <Box
@@ -123,17 +134,12 @@ export const App: FC = () => {
             gap: '10px',
           }}
         >
-          <Button
-            sx={{ width: '200px' }}
-            variant="outlined"
-            onClick={() => {
-              shop.openCashDesk();
-            }}
-            // disabled={!stopwatchActive}
-          >
-            Add Cash Desk
-          </Button>
-          <Shop cashDesks={shop.getCashDesks()} />
+          <Typography>{unservedCustomers.length}</Typography>
+          <Shop
+            time={time}
+            cashDesks={cashDesks}
+            handleOpenCashDesk={handleOpenCashDesk}
+          />
         </Box>
 
         <Drawer

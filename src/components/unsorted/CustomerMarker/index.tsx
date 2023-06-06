@@ -1,4 +1,3 @@
-import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import { Avatar, AvatarProps } from '@mui/material';
 import { FC } from 'react';
 import { Customer } from 'types/global';
@@ -12,7 +11,6 @@ export interface CustomerMarkerProps extends AvatarProps {
 export const CustomerMarker: FC<CustomerMarkerProps> = ({
   status,
   customer,
-  sx,
   ...props
 }) => {
   if (!customer) {

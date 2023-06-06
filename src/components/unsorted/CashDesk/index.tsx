@@ -17,15 +17,23 @@ import { CustomerMarker } from '../CustomerMarker';
 export interface CashDeskProps {
   cashDesk: CashDeskInstance;
   orderNumber: number;
+  time: number;
 }
 
-export const CashDesk: FC<CashDeskProps> = ({ cashDesk, orderNumber }) => {
+export const CashDesk: FC<CashDeskProps> = ({
+  cashDesk,
+  orderNumber,
+  time,
+}) => {
   const {
     open: cashDeskOpen,
     queue,
     activeCustomer,
     servicedCustomers,
     servingTime,
+    unservedCustomers,
+    activeCustomerServingTime,
+    queueServingTime,
   } = cashDesk || {};
   const [open, setOpen] = useState(cashDeskOpen);
 
@@ -63,8 +71,9 @@ export const CashDesk: FC<CashDeskProps> = ({ cashDesk, orderNumber }) => {
     <Box
       sx={{
         position: 'relative',
-        width: '150px',
+        width: '200px',
         display: 'flex',
+        opacity: 0.8,
         flexDirection: 'column',
         p: '8px',
         bgcolor: 'lightgrey',
@@ -102,6 +111,7 @@ export const CashDesk: FC<CashDeskProps> = ({ cashDesk, orderNumber }) => {
             cursor: 'pointer',
           }}
         >
+          <Typography>{time}</Typography>
           <Typography color="primary">{servingTime}</Typography>
           <AccessTimeIcon
             color="primary"
@@ -110,7 +120,15 @@ export const CashDesk: FC<CashDeskProps> = ({ cashDesk, orderNumber }) => {
         </Box>
       </Box>
 
+      <Typography>{unservedCustomers.length}</Typography>
+
       <Divider />
+
+      <Typography>Queue time {queueServingTime}</Typography>
+      <Typography>Active time {activeCustomerServingTime}</Typography>
+
+      <Divider />
+
       <Box sx={{ position: 'relative', height: '120px' }}>
         <Typography sx={{ fontWeight: 'bold', mb: '4px' }}>Черга:</Typography>
         <AvatarGroup
@@ -138,6 +156,7 @@ export const CashDesk: FC<CashDeskProps> = ({ cashDesk, orderNumber }) => {
       </Box>
 
       <Divider />
+
       <Box sx={{ height: '65px' }}>
         <Typography sx={{ fontWeight: 'bold', mb: '4px' }}>На касі:</Typography>
         <CustomerMarker
@@ -145,7 +164,9 @@ export const CashDesk: FC<CashDeskProps> = ({ cashDesk, orderNumber }) => {
           customer={activeCustomer}
         />
       </Box>
+
       <Divider />
+
       <Box sx={{ height: '65px' }}>
         <Typography sx={{ fontWeight: 'bold', mb: '4px' }}>
           Обслужені:
