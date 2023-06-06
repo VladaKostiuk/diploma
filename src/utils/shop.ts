@@ -78,25 +78,20 @@ export class Shop {
       .value();
   };
 
-  updateUnservedCustomers = (customers?: Customer[]) => {
-    if (!customers) {
-      return this.unservedCustomers;
-    }
-    customers.forEach((customer) => {
-      if (!this.unservedCustomers.includes(customer)) {
-        this.enqueueUnservedCustomer(customer);
-      }
-    });
+  updateUnservedCustomers = (customers: Customer[]) => {
+    this.unservedCustomers = [...this.unservedCustomers, ...customers];
     return this.unservedCustomers;
   };
 
   updateCashDesks = () => {
     return this.applyToAllCashDesks((cashDesk, index) => {
       const updatedCashDesk = cashDesk.updateCashDesk(this.time);
-      const { unservedCustomers } = updatedCashDesk || {};
+      const { unservedCustomers: cashDeskUnservedCustomers } =
+        updatedCashDesk || {};
 
-      if (unservedCustomers) {
-        this.updateUnservedCustomers(unservedCustomers);
+      if (cashDeskUnservedCustomers) {
+        this.updateUnservedCustomers(cashDeskUnservedCustomers);
+        updatedCashDesk.resetUnservedCustomers();
       }
 
       if (!updatedCashDesk.open) {
@@ -107,26 +102,28 @@ export class Shop {
     });
   };
 
-  updateShop = (time: number, customers?: Customer[]) => {
+  updateShop = (time: number, customers: Customer[]) => {
     this.time = time;
-    const unservedCustomers = this.updateUnservedCustomers(customers);
+    this.updateUnservedCustomers(customers);
 
-    if (!unservedCustomers || unservedCustomers.length === 0) {
+    if (this.unservedCustomers.length === 0) {
       this.updateCashDesks();
       return this;
     }
 
-    unservedCustomers?.forEach((customer) => {
+    while (this.unservedCustomers.length !== 0) {
       const updatedCashDesks = this.updateCashDesks();
       const shortestWaitingTimeCashDesk =
         this.sortCashDesksByShortestWaitingTime(updatedCashDesks)[0];
-      console.log(shortestWaitingTimeCashDesk);
 
-      if (shortestWaitingTimeCashDesk) {
-        const unservedCustomer = this.dequeueUnservedCustomer();
-        shortestWaitingTimeCashDesk?.enqueue(time, unservedCustomer);
+      if (!shortestWaitingTimeCashDesk) {
+        return this;
       }
-    });
+
+      const unservedCustomer = this.dequeueUnservedCustomer();
+      shortestWaitingTimeCashDesk?.enqueue(this.time, unservedCustomer);
+    }
+
     return this;
   };
 }

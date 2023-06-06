@@ -39,13 +39,13 @@ export const CashDesk: FC<CashDeskProps> = ({
   const [open, setOpen] = useState(cashDeskOpen);
 
   const handleOpenCashDesk = () => {
-    const isOpen = cashDesk.openCashDesk();
-    setOpen(isOpen);
+    const { open: cashDeskOpen } = cashDesk.openCashDesk();
+    setOpen(cashDeskOpen);
   };
 
   const handleCloseCashDesk = () => {
-    const isOpen = cashDesk.closeCashDesk();
-    setOpen(isOpen);
+    const { open: cashDeskOpen } = cashDesk.closeCashDesk();
+    setOpen(cashDeskOpen);
   };
 
   const actionButton = useMemo(() => {

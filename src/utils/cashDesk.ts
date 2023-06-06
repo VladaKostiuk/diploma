@@ -48,6 +48,10 @@ export class CashDesk {
     return this;
   };
 
+  resetUnservedCustomers = () => {
+    this.unservedCustomers = [];
+  };
+
   closeCashDesk = () => {
     this.open = false;
     this.unservedCustomers = this.queue;
@@ -97,9 +101,16 @@ export class CashDesk {
     return this.activeCustomer;
   };
 
-  private serviceCustomer(time: number) {
+  private serviceCustomers(time: number) {
     if (this.activeCustomer) {
-      return this.serviceActiveCustomer(time, this.activeCustomer);
+      const activeCustomer = this.serviceActiveCustomer(
+        time,
+        this.activeCustomer,
+      );
+      if (!activeCustomer) {
+        this.updateCashDesk(time);
+      }
+      return;
     }
 
     const cashDeskAvailable = this.checkCashDeskAvailability();
@@ -121,8 +132,7 @@ export class CashDesk {
   }
 
   updateCashDesk = (time: number) => {
-    this.serviceCustomer(time);
-    // console.log(this.queueServingTime, this.activeCustomerServingTime);
+    this.serviceCustomers(time);
     this.servingTime = this.queueServingTime + this.activeCustomerServingTime;
     return this;
   };

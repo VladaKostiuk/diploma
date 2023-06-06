@@ -57,7 +57,7 @@ export const App: FC = () => {
 
   const handleGenerateData = () => {
     // Dummy data
-    const useDummyData = true;
+    const useDummyData = false;
 
     const generatedCustomers = useDummyData
       ? dummyCustomers
@@ -92,7 +92,7 @@ export const App: FC = () => {
 
   useEffect(() => {
     const customers = dbCustomers?.[time];
-    const updatedShop = shop.updateShop(time, customers);
+    const updatedShop = shop.updateShop(time, customers || []);
     const { unservedCustomers: shopUnservedCustomers } = updatedShop || {};
     if (unservedCustomers) {
       setUnservedCustomers(shopUnservedCustomers);
