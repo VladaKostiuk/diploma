@@ -5,7 +5,7 @@ import { Shop } from 'components/unsorted/Shop';
 import { useStopwatch } from 'hooks/useStopwatch';
 import localforage from 'localforage';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { Customer } from 'types/global';
+import { Customer, ShopFilters } from 'types/global';
 import { CashDesk } from 'utils/cashDesk';
 import { Stores } from 'utils/constants';
 import { dummyCustomers } from 'utils/dummyCustomers';
@@ -19,10 +19,18 @@ import { Shop as ShopClass } from 'utils/shop';
 import { Header } from '../Header';
 import { Layout } from '../Layout';
 
+const initialShopFilters: ShopFilters = {
+  maximalServingTime: 0,
+  totalCashDesks: 1,
+  priorityInService: false,
+};
+
 export const App: FC = () => {
   const [speed, setSpeed] = useState(1);
   const [dbCustomers, setDbCustomers] = useState<PreparedCustomersData>();
-  const [showFilters, setShowFilters] = useState(false);
+  const [shopFilters, setShopFilters] =
+    useState<ShopFilters>(initialShopFilters);
+  const [showDrawer, setShowDrawer] = useState(false);
   const [unservedCustomers, setUnservedCustomers] = useState<Customer[]>([]);
   const [cashDesks, setCashDesks] = useState<CashDesk[]>([]);
 
@@ -34,19 +42,25 @@ export const App: FC = () => {
     active: stopwatchActive,
   } = useStopwatch(speed);
 
-  const shop = useMemo(() => new ShopClass({ cashDesksAmount: 1 }), []);
+  const shop = useMemo(() => new ShopClass(shopFilters), [shopFilters]);
 
-  const handleShowFilters = () => {
-    setShowFilters(true);
+  const handleShowDrawer = () => {
+    setShowDrawer(true);
   };
 
-  const handleHideFilters = () => {
-    setShowFilters(false);
+  const handleHideDrawer = () => {
+    setShowDrawer(false);
   };
 
   const handleResetShop = () => {
     resetStopwatch();
     shop.resetShop();
+  };
+
+  const handleSaveShopFilters = (filters: ShopFilters) => {
+    setShopFilters(filters);
+    handleResetShop();
+    handleHideDrawer();
   };
 
   const handleGetDbData = () => {
@@ -98,7 +112,7 @@ export const App: FC = () => {
       setUnservedCustomers(shopUnservedCustomers);
     }
     setCashDesks(updatedShop.getCashDesks());
-  }, [time]);
+  }, [time, shop]);
 
   useEffect(() => {
     handleGetDbData();
@@ -119,7 +133,7 @@ export const App: FC = () => {
         customersData={dbCustomers}
         resetData={handleResetData}
         generateData={handleGenerateData}
-        handleShowFilters={handleShowFilters}
+        handleShowFilters={handleShowDrawer}
       />
 
       <Layout
@@ -145,16 +159,16 @@ export const App: FC = () => {
         <Drawer
           sx={{ position: 'relative' }}
           anchor="right"
-          onClose={handleHideFilters}
-          open={showFilters}
+          onClose={handleHideDrawer}
+          open={showDrawer}
         >
           <IconButton
             sx={{ position: 'absolute', top: '8px', right: '8px' }}
-            onClick={handleHideFilters}
+            onClick={handleHideDrawer}
           >
             <CancelIcon />
           </IconButton>
-          <Filters />
+          <Filters filters={shopFilters} saveFilters={handleSaveShopFilters} />
         </Drawer>
       </Layout>
     </Box>

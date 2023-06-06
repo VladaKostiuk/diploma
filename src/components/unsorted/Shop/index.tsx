@@ -11,17 +11,14 @@ export interface ShopProps {
   handleAddCashDesk: () => void;
 }
 
-export const Shop: FC<ShopProps> = ({
-  time,
-  cashDesks,
-  handleAddCashDesk,
-}) => {
+export const Shop: FC<ShopProps> = ({ time, cashDesks, handleAddCashDesk }) => {
   return (
     <Box
       sx={{
         p: '16px 8px',
         width: '100%',
         position: 'relative',
+        height: '437px',
       }}
     >
       <Box
@@ -52,7 +49,7 @@ export const Shop: FC<ShopProps> = ({
           Магазин
         </Typography>
       </Box>
-      <Box sx={{ display: 'flex', gap: '10px' }}>
+      <Box sx={{ display: 'flex', gap: '10px', height: '100%' }}>
         {cashDesks.map((cashDesk, index) => (
           <CashDesk
             time={time}
@@ -71,6 +68,7 @@ export const Shop: FC<ShopProps> = ({
             justifyContent: 'center',
             opacity: 0.8,
             border: '3px dashed grey',
+            height: '100%',
           }}
         >
           <Typography

@@ -1,6 +1,38 @@
-import { Box, Button, Paper, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  FormControlLabel,
+  FormGroup,
+  Paper,
+  Switch,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { FC, useRef } from 'react';
+import { ShopFilters } from 'types/global';
 
-export const Filters = () => {
+export interface FiltersProps {
+  filters: ShopFilters;
+  saveFilters: (filters: ShopFilters) => void;
+}
+export const Filters: FC<FiltersProps> = ({ filters, saveFilters }) => {
+  const totalCashDesksRef = useRef();
+  const maximalServingTimeRef = useRef();
+  const priorityInServiceRef = useRef();
+
+  const handleSaveFilters = () => {
+    const totalCashDesks = +(totalCashDesksRef.current as any)?.value;
+    const maximalServingTime = +(maximalServingTimeRef.current as any)?.value;
+    const priorityInService = (priorityInServiceRef.current as any)?.checked;
+
+    const confirmed = confirm(
+      'Зміна фільтрів перезапустить програму. Зберегти?',
+    );
+    if (confirmed) {
+      saveFilters({ totalCashDesks, maximalServingTime, priorityInService });
+    }
+  };
+
   return (
     <Paper sx={{ p: '12px' }}>
       <Box>
@@ -19,17 +51,30 @@ export const Filters = () => {
           <TextField
             label="Максимальна кількість кас"
             size="small"
-            value={1}
-            disabled
+            type="number"
+            InputProps={{ inputProps: { min: 0 } }}
+            inputRef={totalCashDesksRef}
+            defaultValue={filters.totalCashDesks}
           />
           <TextField
-            label="Максимальний час обслуговування"
+            label="Максимальний час очікування"
             size="small"
-            value="-"
-            disabled
+            inputRef={maximalServingTimeRef}
+            defaultValue={filters.maximalServingTime}
           />
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  inputRef={priorityInServiceRef}
+                  defaultChecked={filters.priorityInService}
+                />
+              }
+              label="Враховувати приорітет"
+            />
+          </FormGroup>
         </Box>
-        <Typography
+        {/* <Typography
           variant="h5"
           sx={{
             fontWeight: 'bold',
@@ -53,12 +98,10 @@ export const Filters = () => {
             value="-"
             disabled
           />
-        </Box>
-        <Button variant="contained" color="info">
-          Відкрити касу
-        </Button>
-        <Button sx={{ ml: '8px' }} variant="contained" color="warning">
-          Закрити касу
+        </Box> */}
+
+        <Button variant="outlined" onClick={handleSaveFilters}>
+          Зберегти фільтри
         </Button>
       </Box>
     </Paper>

@@ -19,3 +19,9 @@ export type CashDeskFilters = {
   goodsLimitation?: number;
   processingTimePerGoodItem: number;
 };
+
+export type ShopFilters = {
+  totalCashDesks: number;
+  maximalServingTime: number;
+  priorityInService: boolean;
+}

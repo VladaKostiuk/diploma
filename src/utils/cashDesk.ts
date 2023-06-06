@@ -12,7 +12,7 @@ export class CashDesk {
   activeCustomerServingTime = 0;
   servingTime = 0;
 
-  open = true;
+  open = false;
 
   filters: CashDeskFilters = {
     processingTimePerGoodItem: 1,

@@ -1,20 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import _ from 'lodash';
-import { Customer } from 'types/global';
+import { Customer, ShopFilters } from 'types/global';
 
 import { CashDesk } from './cashDesk';
 
 export class Shop {
   cashDesks: Record<string, CashDesk> = {};
   unservedCustomers: Customer[] = [];
+  shopFilters: ShopFilters | undefined;
   time = 0;
 
-  constructor({ cashDesksAmount }: { cashDesksAmount: number }) {
-    this.initializeShop(cashDesksAmount);
+  constructor(filters: ShopFilters) {
+    this.initializeShop(filters);
   }
 
-  initializeShop = (cashDesksAmount: number) => {
-    [...Array(cashDesksAmount).keys()].forEach(() => {
+  initializeShop = (filters: ShopFilters) => {
+    this.shopFilters = filters;
+    [...Array(filters.totalCashDesks).keys()].forEach(() => {
       this.addCashDesk();
     });
   };

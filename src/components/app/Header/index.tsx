@@ -1,3 +1,4 @@
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import TuneIcon from '@mui/icons-material/Tune';
 import { AppBar, Box, Button, ButtonGroup } from '@mui/material';
 import { ClockGroup } from 'components/unsorted/ClockGroup';
@@ -63,16 +64,26 @@ export const Header: FC<HeaderProps> = ({
           px: '12px',
         }}
       >
-        <ClockGroup
-          active={stopwatchActive}
-          disabled={!customersData}
-          time={time}
-          speed={speed}
-          setSpeed={setSpeed}
-          startStopwatch={startStopwatch}
-          stopStopwatch={pauseStopwatch}
-          resetStopwatch={resetStopwatch}
-        />
+        <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <Button
+            sx={{ height: '36px' }}
+            variant="contained"
+            color="warning"
+            disabled
+          >
+            <RestartAltIcon />
+          </Button>
+          <ClockGroup
+            active={stopwatchActive}
+            disabled={!customersData}
+            time={time}
+            speed={speed}
+            setSpeed={setSpeed}
+            startStopwatch={startStopwatch}
+            stopStopwatch={pauseStopwatch}
+            resetStopwatch={resetStopwatch}
+          />
+        </Box>
         <Box sx={{ display: 'flex', gap: '16px' }}>
           <ButtonGroup size="small" variant="outlined">
             <Button onClick={resetData} color="error" disabled={!customersData}>
