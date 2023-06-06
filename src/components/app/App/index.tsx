@@ -1,5 +1,5 @@
 import CancelIcon from '@mui/icons-material/Cancel';
-import { Box, Button, Drawer, IconButton, Typography } from '@mui/material';
+import { Box, Drawer, IconButton, Typography } from '@mui/material';
 import { Filters } from 'components/unsorted/Filters';
 import { Shop } from 'components/unsorted/Shop';
 import { useStopwatch } from 'hooks/useStopwatch';
@@ -57,7 +57,7 @@ export const App: FC = () => {
 
   const handleGenerateData = () => {
     // Dummy data
-    const useDummyData = false;
+    const useDummyData = true;
 
     const generatedCustomers = useDummyData
       ? dummyCustomers
@@ -85,8 +85,8 @@ export const App: FC = () => {
     });
   };
 
-  const handleOpenCashDesk = () => {
-    const shopCashDesks = shop.openCashDesk();
+  const handleAddCashDesk = () => {
+    const shopCashDesks = shop.addCashDesk();
     setCashDesks(shopCashDesks);
   };
 
@@ -138,7 +138,7 @@ export const App: FC = () => {
           <Shop
             time={time}
             cashDesks={cashDesks}
-            handleOpenCashDesk={handleOpenCashDesk}
+            handleAddCashDesk={handleAddCashDesk}
           />
         </Box>
 

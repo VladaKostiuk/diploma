@@ -7,6 +7,7 @@ import { CashDesk } from './cashDesk';
 export class Shop {
   cashDesks: Record<string, CashDesk> = {};
   unservedCustomers: Customer[] = [];
+  time = 0;
 
   constructor({ cashDesksAmount }: { cashDesksAmount: number }) {
     this.initializeShop(cashDesksAmount);
@@ -14,7 +15,7 @@ export class Shop {
 
   initializeShop = (cashDesksAmount: number) => {
     [...Array(cashDesksAmount).keys()].forEach(() => {
-      this.openCashDesk();
+      this.addCashDesk();
     });
   };
 
@@ -29,7 +30,7 @@ export class Shop {
     return dequeuedCustomer;
   };
 
-  openCashDesk = (filters = { processingTimePerGoodItem: 1 }) => {
+  addCashDesk = (filters = { processingTimePerGoodItem: 1 }) => {
     const cashDesk = new CashDesk({ filters });
     this.cashDesks[cashDesk.id] = cashDesk;
     return this.getCashDesks();
@@ -43,12 +44,28 @@ export class Shop {
     );
   };
 
+  openCashDesk = (cashDeskId: string) => {
+    const cashDesk = this.cashDesks[cashDeskId];
+    if (cashDesk) {
+      cashDesk.open = true;
+    }
+    return this.getCashDesks();
+  };
+
+  closeCashDesk = (cashDeskId: string) => {
+    const cashDesk = this.cashDesks[cashDeskId];
+    if (cashDesk) {
+      cashDesk.openCashDesk();
+    }
+  };
+
   getCashDesks = () => {
     return Object.values(this.cashDesks);
   };
 
   resetShop = () => {
     this.unservedCustomers = [];
+    this.time = 0;
     this.applyToAllCashDesks((cashDesk) => {
       cashDesk.resetCashDesk();
     });
@@ -73,9 +90,9 @@ export class Shop {
     return this.unservedCustomers;
   };
 
-  updateCashDesks = (time: number) => {
+  updateCashDesks = () => {
     return this.applyToAllCashDesks((cashDesk, index) => {
-      const updatedCashDesk = cashDesk.updateCashDesk(time);
+      const updatedCashDesk = cashDesk.updateCashDesk(this.time);
       const { unservedCustomers } = updatedCashDesk || {};
 
       if (unservedCustomers) {
@@ -91,19 +108,19 @@ export class Shop {
   };
 
   updateShop = (time: number, customers?: Customer[]) => {
+    this.time = time;
     const unservedCustomers = this.updateUnservedCustomers(customers);
-    console.log(unservedCustomers);
 
     if (!unservedCustomers || unservedCustomers.length === 0) {
-      const updatedCashDesks = this.updateCashDesks(time);
-      // return { updatedCashDesks, unservedCustomers };
+      this.updateCashDesks();
       return this;
     }
 
     unservedCustomers?.forEach((customer) => {
-      const updatedCashDesks = this.updateCashDesks(time);
+      const updatedCashDesks = this.updateCashDesks();
       const shortestWaitingTimeCashDesk =
         this.sortCashDesksByShortestWaitingTime(updatedCashDesks)[0];
+      console.log(shortestWaitingTimeCashDesk);
 
       if (shortestWaitingTimeCashDesk) {
         const unservedCustomer = this.dequeueUnservedCustomer();

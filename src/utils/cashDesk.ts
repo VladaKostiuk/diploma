@@ -45,7 +45,7 @@ export class CashDesk {
 
   openCashDesk = () => {
     this.open = true;
-    return this.open;
+    return this;
   };
 
   closeCashDesk = () => {
@@ -53,7 +53,7 @@ export class CashDesk {
     this.unservedCustomers = this.queue;
     this.queue = [];
     this.queueServingTime = 0;
-    return this.open;
+    return this;
   };
 
   enqueue(time: number, customer: Customer) {
@@ -93,7 +93,6 @@ export class CashDesk {
       this.activeCustomer = null;
     }
 
-    // console.log('sac', activeCustomer.serviceEndTime, time);
     this.activeCustomerServingTime = activeCustomer.serviceEndTime - time;
     return this.activeCustomer;
   };
@@ -123,7 +122,7 @@ export class CashDesk {
 
   updateCashDesk = (time: number) => {
     this.serviceCustomer(time);
-    console.log(this.queueServingTime, this.activeCustomerServingTime);
+    // console.log(this.queueServingTime, this.activeCustomerServingTime);
     this.servingTime = this.queueServingTime + this.activeCustomerServingTime;
     return this;
   };

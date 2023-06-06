@@ -1,5 +1,6 @@
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
+import SettingsIcon from '@mui/icons-material/Settings';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
 import {
   AvatarGroup,
@@ -76,21 +77,30 @@ export const CashDesk: FC<CashDeskProps> = ({
         opacity: 0.8,
         flexDirection: 'column',
         p: '8px',
+        pt: 0,
         bgcolor: 'lightgrey',
         border: '2px solid',
         borderColor: open ? '#3a8f3a' : '#ff7c7c',
       }}
     >
-      <Box sx={{ position: 'absolute', top: 0, right: 0 }}>{actionButton}</Box>
-      <Typography
-        sx={{
-          textDecoration: 'underline',
-          color: open ? 'green' : 'red',
-          mb: '8px',
-        }}
+      <Box
+        sx={{ display: 'flex', justifyContent: 'space-between', mx: '-8px' }}
       >
-        #{open ? 'відкрита' : 'закрита'}
-      </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box>{actionButton}</Box>
+          <Typography
+            sx={{
+              textDecoration: 'underline',
+              color: open ? 'green' : 'red',
+            }}
+          >
+            #{open ? 'відкрита' : 'закрита'}
+          </Typography>
+        </Box>
+        <IconButton>
+          <SettingsIcon />
+        </IconButton>
+      </Box>
 
       <Box
         sx={{

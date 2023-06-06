@@ -8,13 +8,13 @@ import { CashDesk } from '../CashDesk';
 export interface ShopProps {
   cashDesks: CashDeskInstance[];
   time: number;
-  handleOpenCashDesk: () => void;
+  handleAddCashDesk: () => void;
 }
 
 export const Shop: FC<ShopProps> = ({
   time,
   cashDesks,
-  handleOpenCashDesk,
+  handleAddCashDesk,
 }) => {
   return (
     <Box
@@ -63,7 +63,7 @@ export const Shop: FC<ShopProps> = ({
         ))}
         <Box
           sx={{
-            width: '200px',
+            width: '150px',
             bgcolor: '#f9f9f9',
             display: 'flex',
             flexDirection: 'column',
@@ -75,7 +75,9 @@ export const Shop: FC<ShopProps> = ({
         >
           <Typography
             sx={{
-              fontSize: '20px',
+              fontSize: '22px',
+              letterSpacing: '1px',
+              textAlign: 'center',
               fontWeight: 'bold',
               textTransform: 'uppercase',
               mb: '16px',
@@ -88,7 +90,7 @@ export const Shop: FC<ShopProps> = ({
             color="inherit"
             variant="outlined"
             size="small"
-            onClick={handleOpenCashDesk}
+            onClick={handleAddCashDesk}
           >
             <AddIcon sx={{ width: '30px', height: '30px' }} />
           </Button>
