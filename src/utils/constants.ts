@@ -13,6 +13,6 @@ export enum CustomerMarkerStatus {
 }
 
 export const initialCashDeskFilters: CashDeskFilters = {
-  open: false,
+  open: true,
   processingTimePerGoodItem: 1,
 };

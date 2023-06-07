@@ -1,3 +1,4 @@
+import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import { Avatar, AvatarProps } from '@mui/material';
 import { FC } from 'react';
 import { Customer } from 'types/global';
@@ -42,13 +43,14 @@ export const CustomerMarker: FC<CustomerMarkerProps> = ({
           height: '30px',
           fontSize: '14px',
           border,
+          color: 'grey',
           bgcolor: backgroundColor,
         },
       }}
       {...props}
     >
       {customer.goodsAmount}
-      {/* <ShoppingBasketIcon sx={{ ml: '2px', fontSize: '14px' }} /> */}
+      <ShoppingBasketIcon sx={{ ml: '2px', fontSize: '10px', color: 'grey' }} />
     </Avatar>
   );
 };

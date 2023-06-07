@@ -114,7 +114,6 @@ export const CashDesk: FC<CashDeskProps> = ({
           </Typography>
         </Box>
         <IconButton onClick={handleOpenModal}>
-          {/* <SettingsIcon /> */}
           <InfoIcon />
         </IconButton>
         <Menu
@@ -154,7 +153,7 @@ export const CashDesk: FC<CashDeskProps> = ({
           }}
         >
           <Typography>{time}</Typography>
-          <Typography color="primary">{servingTime}</Typography>
+          {/* <Typography color="primary">{servingTime}</Typography> */}
           <AccessTimeIcon
             color="primary"
             sx={{ width: '20px', height: '20px' }}
@@ -162,12 +161,10 @@ export const CashDesk: FC<CashDeskProps> = ({
         </Box>
       </Box>
 
-      {/* <Typography>{unservedCustomers.length}</Typography> */}
-
       <Divider />
 
-      <Typography>Queue time {queueServingTime}</Typography>
-      <Typography>Active time {activeCustomerServingTime}</Typography>
+      <Typography>Очікування черги: {queueServingTime}</Typography>
+      <Typography>Обслуговування: {activeCustomerServingTime}</Typography>
 
       <Divider />
 

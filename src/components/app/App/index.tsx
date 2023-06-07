@@ -75,14 +75,8 @@ export const App: FC = () => {
 
   const handleResetShop = () => {
     resetStopwatch();
-    const updatedShop = shop.resetShop();
-    console.log(updatedShop.getCashDesks());
-    setCashDesks(updatedShop.getCashDesks());
+    shop.resetShop();
   };
-
-  useEffect(() => {
-    console.log('shop');
-  }, [shop]);
 
   const handleSaveShopFilters = (filters: ShopFilters) => {
     setShopFilters(filters);
@@ -197,10 +191,10 @@ export const App: FC = () => {
             gap: '10px',
           }}
         >
-          <Typography>{unservedCustomers.length}</Typography>
           <Shop
             time={time}
             cashDesks={cashDesks}
+            unservedCustomers={unservedCustomers}
             // handleAddCashDesk={handleAddCashDesk}
             // TODO: Temp solution;
             handleAddCashDesk={handleShowDrawer}

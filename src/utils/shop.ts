@@ -5,7 +5,7 @@ import { CashDeskFilters, Customer, ShopFilters } from 'types/global';
 import { CashDesk } from './cashDesk';
 
 export class Shop {
-  cashDesks: Record<string, CashDesk> = {};
+  cashDesks: CashDesk[] = [];
   unservedCustomers: Customer[] = [];
   shopFilters: ShopFilters | undefined;
   time = 0;
@@ -34,7 +34,7 @@ export class Shop {
 
   addCashDesk = (filters: CashDeskFilters) => {
     const cashDesk = new CashDesk(filters);
-    this.cashDesks[cashDesk.id] = cashDesk;
+    this.cashDesks.push(cashDesk);
     return this.getCashDesks();
   };
 
@@ -47,31 +47,37 @@ export class Shop {
   };
 
   openCashDesk = (cashDeskId: string) => {
-    const cashDesk = this.cashDesks[cashDeskId];
+    const cashDesk = this.cashDesks.find(
+      (cashDesk) => (cashDesk.id = cashDeskId),
+    );
     if (cashDesk) {
-      cashDesk.filters.open = true;
+      cashDesk.closeCashDesk();
     }
+    this.updateCashDesks();
     return this.getCashDesks();
   };
 
   closeCashDesk = (cashDeskId: string) => {
-    const cashDesk = this.cashDesks[cashDeskId];
+    const cashDesk = this.cashDesks.find(
+      (cashDesk) => (cashDesk.id = cashDeskId),
+    );
     if (cashDesk) {
       cashDesk.openCashDesk();
     }
+    this.updateCashDesks();
   };
 
   getCashDesks = () => {
-    return Object.values(this.cashDesks);
+    return this.cashDesks;
   };
 
   resetShop = () => {
-    console.log('rshop');
     this.unservedCustomers = [];
     this.time = 0;
     this.applyToAllCashDesks((cashDesk, index) => {
-      this.cashDesks[index] = cashDesk.resetCashDesk();
+      cashDesk.resetCashDesk();
     });
+    this.updateCashDesks();
     return this;
   };
 

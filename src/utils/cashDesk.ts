@@ -18,7 +18,7 @@ export class CashDesk {
   queue: Customer[] = [];
   // unservedCustomers: Customer[] = [];
   // servicedCustomers: CustomerInQueue[] = [];
-  statistic: CashDeskStatistic = initialStatistic;
+  statistic: CashDeskStatistic = { ...initialStatistic };
   activeCustomer: CustomerInQueue | null = null;
 
   queueServingTime = 0;
@@ -28,7 +28,7 @@ export class CashDesk {
   filters: CashDeskFilters;
 
   constructor(filters: CashDeskFilters) {
-    this.filters = filters;
+    this.filters = { ...filters };
   }
 
   calculateCustomerServingTime = (customerGoodsAmount: number) => {
@@ -36,9 +36,8 @@ export class CashDesk {
   };
 
   resetCashDesk() {
-    console.log('rcd');
     this.queue = [];
-    this.statistic = initialStatistic;
+    this.statistic = { ...initialStatistic };
     this.activeCustomer = null;
 
     this.queueServingTime = 0;
@@ -129,10 +128,13 @@ export class CashDesk {
   private updateStatistic = (time: number) => {
     const queueLength = this.queue.length;
     const isActive = this.activeCustomer ? 1 : 0;
-    this.statistic.numberOfCustomersInSystemAtTime[time] =
-      queueLength + isActive;
-    this.statistic.queueLengthAtTime[time] = queueLength;
-    this.statistic.occupanceAtTime[time] = !!isActive;
+
+    if (this.filters.open || queueLength) {
+      // this.statistic.numberOfCustomersInSystemAtTime[time] =
+      //   queueLength + isActive;
+      this.statistic.queueLengthAtTime[time] = queueLength;
+      // this.statistic.occupanceAtTime[time] = !!isActive;
+    }
   };
 
   updateCashDesk = (time: number) => {

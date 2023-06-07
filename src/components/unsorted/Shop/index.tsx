@@ -1,17 +1,26 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Box, Button, IconButton, Typography } from '@mui/material';
+import { AvatarGroup, Box, Button, Typography } from '@mui/material';
 import { FC } from 'react';
+import { Customer } from 'types/global';
 import { CashDesk as CashDeskInstance } from 'utils/cashDesk';
+import { CustomerMarkerStatus } from 'utils/constants';
 
 import { CashDesk } from '../CashDesk';
+import { CustomerMarker } from '../CustomerMarker';
 
 export interface ShopProps {
   cashDesks: CashDeskInstance[];
   time: number;
+  unservedCustomers: Customer[];
   handleAddCashDesk: () => void;
 }
 
-export const Shop: FC<ShopProps> = ({ time, cashDesks, handleAddCashDesk }) => {
+export const Shop: FC<ShopProps> = ({
+  time,
+  cashDesks,
+  handleAddCashDesk,
+  unservedCustomers,
+}) => {
   return (
     <Box
       sx={{
@@ -49,7 +58,32 @@ export const Shop: FC<ShopProps> = ({ time, cashDesks, handleAddCashDesk }) => {
           Магазин
         </Typography>
       </Box>
-      <Box sx={{ display: 'flex', gap: '10px', height: '100%' }}>
+      <Box>
+        <AvatarGroup
+          max={10}
+          sx={{
+            height: '30px',
+            width: '30px',
+            mb: '16px',
+            justifyContent: 'flex-end',
+            '& .MuiAvatar-root': {
+              width: 30,
+              height: 30,
+              borderWidth: 1,
+              fontSize: 14,
+            },
+          }}
+        >
+          {unservedCustomers.map((customer) => (
+            <CustomerMarker
+              key={customer.id}
+              status={CustomerMarkerStatus.IN_QUEUE}
+              customer={customer}
+            />
+          ))}
+        </AvatarGroup>
+      </Box>
+      <Box sx={{ display: 'flex', gap: '10px', height: 'calc(100% - 46px)' }}>
         {cashDesks.map((cashDesk, index) => (
           <CashDesk
             time={time}

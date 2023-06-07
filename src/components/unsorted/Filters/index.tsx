@@ -29,20 +29,20 @@ export const Filters: FC<FiltersProps> = ({ filters, saveFilters }) => {
     const maximalServingTime = +(maximalServingTimeRef.current as any)?.value;
     const priorityInService = (priorityInServiceRef.current as any)?.checked;
 
-    const confirmed = confirm(
-      'Зміна фільтрів перезапустить програму. Зберегти?',
-    );
-    if (confirmed) {
-      saveFilters({
-        ...filters,
-        ...{
-          totalCashDesks: cashDesks.length,
-          maximalServingTime,
-          priorityInService,
-          cashDesks,
-        },
-      });
-    }
+    // const confirmed = confirm(
+    //   'Зміна фільтрів перезапустить програму. Зберегти?',
+    // );
+    // if (confirmed) {
+    saveFilters({
+      ...filters,
+      ...{
+        totalCashDesks: cashDesks.length,
+        maximalServingTime,
+        priorityInService,
+        cashDesks,
+      },
+    });
+    // }
   };
 
   const handleAddCashDesk = () => {
