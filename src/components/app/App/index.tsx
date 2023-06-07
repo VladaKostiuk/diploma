@@ -85,7 +85,7 @@ export const App: FC = () => {
 
   const handleGenerateData = () => {
     // Dummy data
-    const useDummyData = false;
+    const useDummyData = true;
 
     const generatedCustomers = useDummyData
       ? dummyCustomers

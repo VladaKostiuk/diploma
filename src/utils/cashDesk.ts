@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class CashDesk {
   id: string = uuidv4();
   queue: Customer[] = [];
-  unservedCustomers: Customer[] = [];
+  // unservedCustomers: Customer[] = [];
   servicedCustomers: CustomerInQueue[] = [];
   activeCustomer: CustomerInQueue | null = null;
 
@@ -25,7 +25,6 @@ export class CashDesk {
   resetCashDesk() {
     this.queue = [];
     this.servicedCustomers = [];
-    this.unservedCustomers = [];
     this.activeCustomer = null;
 
     this.queueServingTime = 0;
@@ -38,20 +37,12 @@ export class CashDesk {
     return this;
   };
 
-  resetUnservedCustomers = () => {
-    this.unservedCustomers = [];
-  };
-
   closeCashDesk = () => {
     this.filters.open = false;
-    this.unservedCustomers = this.queue;
-    this.queue = [];
-    this.queueServingTime = 0;
     return this;
   };
 
   enqueue(time: number, customer: Customer) {
-    this.unservedCustomers = [];
     const updatedQueue = [...this.queue, customer];
     const customerServingTime = this.calculateCustomerServingTime(
       customer.goodsAmount,
@@ -72,10 +63,6 @@ export class CashDesk {
     this.queueServingTime = this.queueServingTime - customerServingTime;
     this.queue = restQueue;
     return dequeuedCustomer;
-  }
-
-  private checkCashDeskAvailability() {
-    return !this.activeCustomer && this.filters.open;
   }
 
   private serviceActiveCustomer = (
@@ -103,7 +90,7 @@ export class CashDesk {
       return;
     }
 
-    const cashDeskAvailable = this.checkCashDeskAvailability();
+    const cashDeskAvailable = !this.activeCustomer;
 
     if (cashDeskAvailable && this.queue.length > 0) {
       const dequeuedCustomer = this.dequeue();

@@ -34,7 +34,7 @@ export const CashDesk: FC<CashDeskProps> = ({
     activeCustomer,
     servicedCustomers,
     servingTime,
-    unservedCustomers,
+    // unservedCustomers,
     activeCustomerServingTime,
     queueServingTime,
   } = cashDesk || {};
@@ -162,7 +162,7 @@ export const CashDesk: FC<CashDeskProps> = ({
         </Box>
       </Box>
 
-      <Typography>{unservedCustomers.length}</Typography>
+      {/* <Typography>{unservedCustomers.length}</Typography> */}
 
       <Divider />
 

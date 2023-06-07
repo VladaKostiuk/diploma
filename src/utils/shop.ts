@@ -88,13 +88,6 @@ export class Shop {
   updateCashDesks = () => {
     return this.applyToAllCashDesks((cashDesk, index) => {
       const updatedCashDesk = cashDesk.updateCashDesk(this.time);
-      const { unservedCustomers: cashDeskUnservedCustomers } =
-        updatedCashDesk || {};
-
-      if (cashDeskUnservedCustomers) {
-        this.updateUnservedCustomers(cashDeskUnservedCustomers);
-        updatedCashDesk.resetUnservedCustomers();
-      }
 
       if (!updatedCashDesk.filters.open) {
         return null;
