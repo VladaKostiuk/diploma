@@ -18,6 +18,7 @@ export type HeaderProps = {
   resetData: () => void;
   generateData: () => void;
   handleShowFilters: () => void;
+  usePoisson: boolean;
 };
 
 export const Header: FC<HeaderProps> = ({
@@ -26,6 +27,7 @@ export const Header: FC<HeaderProps> = ({
   resetData,
   generateData,
   handleShowFilters,
+  usePoisson,
 }) => {
   const {
     active: stopwatchActive,
@@ -85,21 +87,27 @@ export const Header: FC<HeaderProps> = ({
           />
         </Box>
         <Box sx={{ display: 'flex', gap: '16px' }}>
-          <ButtonGroup size="small" variant="outlined">
-            <Button onClick={resetData} color="error" disabled={!customersData}>
-              Reset data
-            </Button>
-            <Button
-              onClick={generateData}
-              color="success"
-              disabled={!!customersData}
-            >
-              Generate data
-            </Button>
-            <Button onClick={handleShowCustomersTableModal} color="info">
-              Show data
-            </Button>
-          </ButtonGroup>
+          {!usePoisson && (
+            <ButtonGroup size="small" variant="outlined">
+              <Button
+                onClick={resetData}
+                color="error"
+                disabled={!customersData}
+              >
+                Reset data
+              </Button>
+              <Button
+                onClick={generateData}
+                color="success"
+                disabled={!!customersData}
+              >
+                Generate data
+              </Button>
+              <Button onClick={handleShowCustomersTableModal} color="info">
+                Show data
+              </Button>
+            </ButtonGroup>
+          )}
           <Button
             sx={{ borderRadius: '5px' }}
             variant="contained"

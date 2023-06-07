@@ -30,7 +30,7 @@ export const CustomerMarker: FC<CustomerMarkerProps> = ({
 
   const border = (() => {
     if (status === CustomerMarkerStatus.IN_SERVICE) {
-      return '2px solid lime !important';
+      return '1px solid lime !important';
     }
     return '1px solid white !important';
   })();

@@ -152,8 +152,8 @@ export const CashDesk: FC<CashDeskProps> = ({
             cursor: 'pointer',
           }}
         >
-          <Typography>{time}</Typography>
-          {/* <Typography color="primary">{servingTime}</Typography> */}
+          {/* <Typography>{time}</Typography> */}
+          <Typography color="primary">{servingTime}</Typography>
           <AccessTimeIcon
             color="primary"
             sx={{ width: '20px', height: '20px' }}

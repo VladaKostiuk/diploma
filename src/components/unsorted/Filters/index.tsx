@@ -3,23 +3,34 @@ import {
   Box,
   Button,
   Divider,
+  FormControl,
   FormControlLabel,
   FormGroup,
+  FormLabel,
   IconButton,
   Paper,
+  Radio,
+  RadioGroup,
   Switch,
   TextField,
   Typography,
 } from '@mui/material';
-import { FC, useEffect, useRef, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useRef, useState } from 'react';
 import { Optional, ShopFilters } from 'types/global';
 import { initialCashDeskFilters } from 'utils/constants';
 
 export interface FiltersProps {
   filters: ShopFilters;
   saveFilters: (filters: ShopFilters) => void;
+  usePoisson: boolean;
+  setUsePoisson: Dispatch<SetStateAction<boolean>>;
 }
-export const Filters: FC<FiltersProps> = ({ filters, saveFilters }) => {
+export const Filters: FC<FiltersProps> = ({
+  filters,
+  saveFilters,
+  usePoisson,
+  setUsePoisson,
+}) => {
   const maximalServingTimeRef = useRef();
   const priorityInServiceRef = useRef();
 
@@ -29,20 +40,20 @@ export const Filters: FC<FiltersProps> = ({ filters, saveFilters }) => {
     const maximalServingTime = +(maximalServingTimeRef.current as any)?.value;
     const priorityInService = (priorityInServiceRef.current as any)?.checked;
 
-    // const confirmed = confirm(
-    //   'Зміна фільтрів перезапустить програму. Зберегти?',
-    // );
-    // if (confirmed) {
-    saveFilters({
-      ...filters,
-      ...{
-        totalCashDesks: cashDesks.length,
-        maximalServingTime,
-        priorityInService,
-        cashDesks,
-      },
-    });
-    // }
+    const confirmed = confirm(
+      'Зміна фільтрів перезапустить програму. Зберегти?',
+    );
+    if (confirmed) {
+      saveFilters({
+        ...filters,
+        ...{
+          totalCashDesks: cashDesks.length,
+          maximalServingTime,
+          priorityInService,
+          cashDesks,
+        },
+      });
+    }
   };
 
   const handleAddCashDesk = () => {
@@ -72,6 +83,25 @@ export const Filters: FC<FiltersProps> = ({ filters, saveFilters }) => {
 
   return (
     <Paper sx={{ p: '12px' }}>
+      <FormControl>
+        <FormLabel>Джерело даних</FormLabel>
+        <RadioGroup
+          value={usePoisson ? 'poisson' : 'db'}
+          onChange={(event) => {
+            setUsePoisson(event.target.value === 'poisson');
+          }}
+        >
+          <FormControlLabel value="db" control={<Radio />} label="База даних" />
+          <FormControlLabel
+            value="poisson"
+            control={<Radio />}
+            label="Пуассонівський процесс"
+          />
+        </RadioGroup>
+      </FormControl>
+
+      <Divider sx={{ my: '16px' }} />
+
       <Box>
         <Typography
           variant="h5"
@@ -92,7 +122,8 @@ export const Filters: FC<FiltersProps> = ({ filters, saveFilters }) => {
             value={cashDesks.length}
             disabled
           />
-          <TextField
+          {/* TODO: Доробити */}
+          {/* <TextField
             label="Максимальний час очікування"
             size="small"
             inputRef={maximalServingTimeRef}
@@ -110,7 +141,7 @@ export const Filters: FC<FiltersProps> = ({ filters, saveFilters }) => {
               }
               label="Враховувати приорітет"
             />
-          </FormGroup>
+          </FormGroup> */}
         </Box>
 
         <Divider sx={{ mt: '16px' }} />

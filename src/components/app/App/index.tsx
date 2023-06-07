@@ -1,18 +1,27 @@
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { Box, Card, Drawer, IconButton, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  Drawer,
+  IconButton,
+  Typography,
+} from '@mui/material';
 import { Filters } from 'components/unsorted/Filters';
 import { Modal } from 'components/unsorted/Modal';
 import { Shop } from 'components/unsorted/Shop';
 import { Statistic } from 'components/unsorted/Statistic';
 import { useStopwatch } from 'hooks/useStopwatch';
 import localforage from 'localforage';
+import poissonProcess from 'poisson-process';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { CashDeskStatistic, Customer, ShopFilters } from 'types/global';
 import { CashDesk } from 'utils/cashDesk';
 import { initialCashDeskFilters, Stores } from 'utils/constants';
 import { dummyCustomers } from 'utils/dummyCustomers';
 import { generateCustomers } from 'utils/generateCustomers';
+import { generatePoissonProcessCustomer } from 'utils/generatePoissonProcessCustomers';
 import {
   prepareCustomersData,
   PreparedCustomersData,
@@ -41,6 +50,8 @@ export const App: FC = () => {
   const [cashDesksStatistic, setCashDesksStatistic] = useState<
     CashDeskStatistic[]
   >([]);
+  const [poissonCustomers, setPoissonCustomers] = useState<Customer[]>([]);
+  const [usePoisson, setUsePoisson] = useState(false);
 
   const {
     time,
@@ -52,18 +63,28 @@ export const App: FC = () => {
 
   const shop = useMemo(() => new ShopClass(shopFilters), [shopFilters]);
 
-  // const poisson = useMemo(
-  //   () =>
-  //     poissonProcess.create(2000, function message() {
-  //       console.log('A message arrived.');
-  //       setpc((prev) => [...prev, generatePoissonProcessCustomer()]);
-  //     }),
-  //   [],
-  // );
+  const poisson = useMemo(
+    () =>
+      poissonProcess.create(2000, function message() {
+        console.log('Customer generated.');
+        const customer = generatePoissonProcessCustomer();
+        setPoissonCustomers((prev) => [
+          ...prev,
+          { ...customer, arrivalTime: time },
+        ]);
+      }),
+    [],
+  );
 
-  // const handleStartApplication = () => {
-  //   poisson.start();
-  // };
+  const handleStartApplication = () => {
+    usePoisson && poisson.start();
+    startStopwatch();
+  };
+
+  const handlePauseApplication = () => {
+    usePoisson && poisson.stop();
+    pauseStopwatch();
+  };
 
   const handleShowDrawer = () => {
     setShowDrawer(true);
@@ -74,9 +95,14 @@ export const App: FC = () => {
   };
 
   const handleResetShop = () => {
+    usePoisson && poisson.stop();
     resetStopwatch();
     shop.resetShop();
   };
+
+  useEffect(() => {
+    handleResetShop();
+  }, [usePoisson]);
 
   const handleSaveShopFilters = (filters: ShopFilters) => {
     setShopFilters(filters);
@@ -92,7 +118,7 @@ export const App: FC = () => {
 
   const handleGenerateData = () => {
     // Dummy data
-    const useDummyData = true;
+    const useDummyData = false;
 
     const generatedCustomers = useDummyData
       ? dummyCustomers
@@ -106,7 +132,7 @@ export const App: FC = () => {
       .then((dbCustomers) => {
         if (dbCustomers) {
           setDbCustomers(dbCustomers as PreparedCustomersData);
-          // alert('Покупців згенеровано!');
+          alert('Покупців згенеровано!');
         }
         handleGetDbData();
       });
@@ -116,17 +142,13 @@ export const App: FC = () => {
     localforage.removeItem(Stores.Customers).then(() => {
       setDbCustomers(undefined);
       handleResetShop();
-      // alert('Покупців очищено!');
+      alert('Покупців очищено!');
     });
   };
 
-  const handleAddCashDesk = () => {
-    // const shopCashDesks = shop.addCashDesk();
-    // setCashDesks(shopCashDesks);
-  };
-
   useEffect(() => {
-    const customers = dbCustomers?.[time];
+    const customers = usePoisson ? poissonCustomers : dbCustomers?.[time];
+    setPoissonCustomers([]);
     const updatedShop = shop.updateShop(time, customers || []);
     const { unservedCustomers: shopUnservedCustomers } = updatedShop || {};
     if (unservedCustomers) {
@@ -149,8 +171,8 @@ export const App: FC = () => {
         timer={{
           active: stopwatchActive,
           time,
-          startStopwatch,
-          pauseStopwatch,
+          startStopwatch: handleStartApplication,
+          pauseStopwatch: handlePauseApplication,
           resetStopwatch: handleResetShop,
           speed,
           setSpeed,
@@ -159,6 +181,7 @@ export const App: FC = () => {
         resetData={handleResetData}
         generateData={handleGenerateData}
         handleShowFilters={handleShowDrawer}
+        usePoisson={usePoisson}
       />
 
       <Layout
@@ -213,7 +236,12 @@ export const App: FC = () => {
           >
             <CancelIcon />
           </IconButton>
-          <Filters filters={shopFilters} saveFilters={handleSaveShopFilters} />
+          <Filters
+            usePoisson={usePoisson}
+            setUsePoisson={setUsePoisson}
+            filters={shopFilters}
+            saveFilters={handleSaveShopFilters}
+          />
         </Drawer>
       </Layout>
       <Modal
