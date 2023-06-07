@@ -32,3 +32,10 @@ export type ShopFilters = {
   priorityInService: boolean;
   cashDesks: CashDeskFilters[];
 };
+
+export type CashDeskStatistic = {
+  servicedCustomers: CustomerInQueue[];
+  occupanceAtTime: Record<number, boolean>;
+  queueLengthAtTime: Record<number, number>;
+  numberOfCustomersInSystemAtTime: Record<number, number>;
+};

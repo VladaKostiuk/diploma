@@ -1,11 +1,24 @@
-import { CashDeskFilters, Customer, CustomerInQueue } from 'types/global';
+import {
+  CashDeskFilters,
+  CashDeskStatistic,
+  Customer,
+  CustomerInQueue,
+} from 'types/global';
 import { v4 as uuidv4 } from 'uuid';
+
+const initialStatistic: CashDeskStatistic = {
+  numberOfCustomersInSystemAtTime: {},
+  queueLengthAtTime: {},
+  occupanceAtTime: {},
+  servicedCustomers: [],
+};
 
 export class CashDesk {
   id: string = uuidv4();
   queue: Customer[] = [];
   // unservedCustomers: Customer[] = [];
-  servicedCustomers: CustomerInQueue[] = [];
+  // servicedCustomers: CustomerInQueue[] = [];
+  statistic: CashDeskStatistic = initialStatistic;
   activeCustomer: CustomerInQueue | null = null;
 
   queueServingTime = 0;
@@ -23,13 +36,15 @@ export class CashDesk {
   };
 
   resetCashDesk() {
+    console.log('rcd');
     this.queue = [];
-    this.servicedCustomers = [];
+    this.statistic = initialStatistic;
     this.activeCustomer = null;
 
     this.queueServingTime = 0;
     this.activeCustomerServingTime = 0;
     this.servingTime = 0;
+    return this;
   }
 
   openCashDesk = () => {
@@ -70,7 +85,10 @@ export class CashDesk {
     activeCustomer: CustomerInQueue,
   ) => {
     if (activeCustomer.serviceEndTime === time) {
-      this.servicedCustomers = [...this.servicedCustomers, activeCustomer];
+      this.statistic.servicedCustomers = [
+        ...this.statistic.servicedCustomers,
+        activeCustomer,
+      ];
       this.activeCustomer = null;
     }
 
@@ -108,9 +126,19 @@ export class CashDesk {
     }
   }
 
+  private updateStatistic = (time: number) => {
+    const queueLength = this.queue.length;
+    const isActive = this.activeCustomer ? 1 : 0;
+    this.statistic.numberOfCustomersInSystemAtTime[time] =
+      queueLength + isActive;
+    this.statistic.queueLengthAtTime[time] = queueLength;
+    this.statistic.occupanceAtTime[time] = !!isActive;
+  };
+
   updateCashDesk = (time: number) => {
     this.serviceCustomers(time);
     this.servingTime = this.queueServingTime + this.activeCustomerServingTime;
+    this.updateStatistic(time);
     return this;
   };
 }

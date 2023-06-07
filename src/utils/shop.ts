@@ -66,11 +66,13 @@ export class Shop {
   };
 
   resetShop = () => {
+    console.log('rshop');
     this.unservedCustomers = [];
     this.time = 0;
-    this.applyToAllCashDesks((cashDesk) => {
-      cashDesk.resetCashDesk();
+    this.applyToAllCashDesks((cashDesk, index) => {
+      this.cashDesks[index] = cashDesk.resetCashDesk();
     });
+    return this;
   };
 
   sortCashDesksByShortestWaitingTime = (cashDesks: CashDesk[]) => {

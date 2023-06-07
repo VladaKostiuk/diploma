@@ -79,7 +79,7 @@ export const ClockGroup: FC<ClockGroupProps> = ({
       <Clock time={time} />
       <ToggleButtonGroup
         disabled={disabled}
-        sx={{ ml: '12px' }}
+        sx={{ ml: '12px', height: '36px' }}
         onChange={handleChangeSpeed}
         value={speed}
         color="primary"

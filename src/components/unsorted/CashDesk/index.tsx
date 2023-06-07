@@ -32,7 +32,7 @@ export const CashDesk: FC<CashDeskProps> = ({
     filters,
     queue,
     activeCustomer,
-    servicedCustomers,
+    statistic,
     servingTime,
     // unservedCustomers,
     activeCustomerServingTime,
@@ -225,7 +225,7 @@ export const CashDesk: FC<CashDeskProps> = ({
             },
           }}
         >
-          {servicedCustomers
+          {statistic?.servicedCustomers
             .slice(0)
             .reverse()
             .map((customer) => (

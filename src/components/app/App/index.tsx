@@ -1,11 +1,14 @@
+import BarChartIcon from '@mui/icons-material/BarChart';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { Box, Drawer, IconButton, Typography } from '@mui/material';
+import { Box, Card, Drawer, IconButton, Typography } from '@mui/material';
 import { Filters } from 'components/unsorted/Filters';
+import { Modal } from 'components/unsorted/Modal';
 import { Shop } from 'components/unsorted/Shop';
+import { Statistic } from 'components/unsorted/Statistic';
 import { useStopwatch } from 'hooks/useStopwatch';
 import localforage from 'localforage';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { Customer, ShopFilters } from 'types/global';
+import { CashDeskStatistic, Customer, ShopFilters } from 'types/global';
 import { CashDesk } from 'utils/cashDesk';
 import { initialCashDeskFilters, Stores } from 'utils/constants';
 import { dummyCustomers } from 'utils/dummyCustomers';
@@ -34,6 +37,10 @@ export const App: FC = () => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [unservedCustomers, setUnservedCustomers] = useState<Customer[]>([]);
   const [cashDesks, setCashDesks] = useState<CashDesk[]>([]);
+  const [showStatistic, setShowStatistic] = useState(false);
+  const [cashDesksStatistic, setCashDesksStatistic] = useState<
+    CashDeskStatistic[]
+  >([]);
 
   const {
     time,
@@ -68,8 +75,14 @@ export const App: FC = () => {
 
   const handleResetShop = () => {
     resetStopwatch();
-    shop.resetShop();
+    const updatedShop = shop.resetShop();
+    console.log(updatedShop.getCashDesks());
+    setCashDesks(updatedShop.getCashDesks());
   };
+
+  useEffect(() => {
+    console.log('shop');
+  }, [shop]);
 
   const handleSaveShopFilters = (filters: ShopFilters) => {
     setShopFilters(filters);
@@ -125,7 +138,11 @@ export const App: FC = () => {
     if (unservedCustomers) {
       setUnservedCustomers(shopUnservedCustomers);
     }
-    setCashDesks(updatedShop.getCashDesks());
+    const updatedCashDesks = updatedShop.getCashDesks();
+    setCashDesks(updatedCashDesks);
+    setCashDesksStatistic(
+      updatedCashDesks.map((cashDesks) => cashDesks.statistic),
+    );
   }, [time, shop]);
 
   useEffect(() => {
@@ -133,7 +150,7 @@ export const App: FC = () => {
   }, []);
 
   return (
-    <Box>
+    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header
         timer={{
           active: stopwatchActive,
@@ -153,8 +170,25 @@ export const App: FC = () => {
       <Layout
         sx={{
           px: '12px',
+          flexGrow: 1,
+          position: 'relative',
         }}
       >
+        <IconButton
+          size="large"
+          color="primary"
+          sx={{
+            position: 'absolute',
+            right: '16px',
+            bottom: '16px',
+            border: '1px solid #1976d2',
+          }}
+          onClick={() => {
+            setShowStatistic(true);
+          }}
+        >
+          <BarChartIcon sx={{ width: '40px', height: '40px' }} />
+        </IconButton>
         {/* <Button onClick={handleStartApplication}>Start</Button> */}
         <Box
           sx={{
@@ -188,6 +222,14 @@ export const App: FC = () => {
           <Filters filters={shopFilters} saveFilters={handleSaveShopFilters} />
         </Drawer>
       </Layout>
+      <Modal
+        open={showStatistic}
+        onClose={() => {
+          setShowStatistic(false);
+        }}
+      >
+        <Statistic statistic={cashDesksStatistic} />
+      </Modal>
     </Box>
   );
 };
