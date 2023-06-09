@@ -77,7 +77,7 @@ export const Header: FC<HeaderProps> = ({
           </Button>
           <ClockGroup
             active={stopwatchActive}
-            disabled={!customersData}
+            disabled={!customersData && !usePoisson}
             time={time}
             speed={speed}
             setSpeed={setSpeed}
